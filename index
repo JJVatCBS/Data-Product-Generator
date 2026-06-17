@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP BW Data Product Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.5/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;font-family:'Source Sans 3',system-ui,sans-serif}
+.sidebar{transition:transform 0.25s ease}
+@media(max-width:800px){.sidebar{position:fixed!important;left:0;top:48px;height:calc(100vh - 48px);transform:translateX(-100%);box-shadow:4px 0 24px rgba(0,0,0,0.1)}.sidebar.open{transform:translateX(0)}.mobile-toggle{display:flex!important}}
+.system-alert{background:linear-gradient(90deg,#fff3e0,#fff8ef);border-left:4px solid #e76500;padding:1.2rem 1.5rem;margin-bottom:1.5rem;border-radius:0 6px 6px 0}.system-alert h3{color:#e76500;font-size:.95rem;margin-bottom:.5rem}.system-alert table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.5rem}.system-alert td{padding:.3rem .6rem;border-bottom:1px solid #f0e0c8}.system-alert td:first-child{font-weight:600;width:35%;color:#32363a}
+.overview{background:#fff;border:1px solid #d9dce0;border-radius:8px;padding:1.5rem;margin-bottom:1.5rem}.overview h2{font-size:1.1rem;color:#1a2733;margin-bottom:.7rem}
+.step{background:#fff;border:1px solid #d9dce0;border-radius:8px;padding:1.3rem 1.5rem;margin-bottom:1rem}.step ol,.step ul{padding-left:1.4rem;margin:.5rem 0}.step li{margin-bottom:.35rem}
+.badge{font-size:.7rem;padding:.15rem .5rem;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;display:inline-block}.badge-pflicht{background:#fde8e8;color:#cc1919}.badge-optional{background:#e8f5e8;color:#188918}.badge-empfohlen{background:#fff3e0;color:#e76500}.badge-tool{background:#e8f4fd;color:#0070f2;font-size:.65rem}
+.step-goal{font-style:italic;color:#6a6d70;margin-bottom:.7rem;font-size:.92rem}
+.callout{padding:.8rem 1rem;border-radius:5px;margin:.8rem 0;font-size:.9rem}.callout-warn{background:#fff8e1;border-left:3px solid #e76500}.callout-info{background:#e8f4fd;border-left:3px solid #0070f2}.callout-danger{background:#fde8e8;border-left:3px solid #cc1919}.callout strong{font-size:.85rem}
+table.data{width:100%;border-collapse:collapse;font-size:.88rem;margin:.7rem 0}table.data th{background:#1a2733;color:#fff;text-align:left;padding:.5rem .7rem;font-weight:600;font-size:.82rem}table.data td{padding:.45rem .7rem;border-bottom:1px solid #d9dce0;vertical-align:top}table.data tr:nth-child(even) td{background:#f9fafb}table.data .col-disabled{opacity:.4;background:#f0f0f0!important}table.data th.col-disabled{background:#8a9199!important;opacity:.6}table.data tr:nth-child(even) td.col-disabled{background:#e8e8e8!important;opacity:.4}
+code{font-family:'Source Code Pro',monospace;background:#f0f2f5;padding:.1rem .4rem;border-radius:3px;font-size:.88em;color:#1a2733}
+.happy-path{background:linear-gradient(135deg,#e8f5e8,#f0faf0);border:1px solid #b8dfb8;border-radius:8px;padding:1.5rem;margin-top:1rem}.happy-path h2{color:#188918;font-size:1.1rem;margin-bottom:.8rem}.happy-path ol{padding-left:1.4rem}.happy-path li{margin-bottom:.3rem}
+.questions{background:#fff;border:2px solid #0070f2;border-radius:8px;padding:1.5rem;margin-top:1rem}.questions h2{color:#0070f2;font-size:1.1rem;margin-bottom:.8rem}.questions ol{padding-left:1.4rem}.questions li{margin-bottom:.4rem}.questions li strong{color:#1a2733}
+.sources{margin-top:1rem;font-size:.85rem;color:#6a6d70;border-top:1px solid #d9dce0;padding-top:1rem}.sources h3{font-size:.95rem;color:#32363a;margin-bottom:.5rem}.sources table{width:100%;border-collapse:collapse}.sources td{padding:.3rem .5rem;border-bottom:1px solid #eee;vertical-align:top}.sources td:first-child{font-weight:600;width:10%;white-space:nowrap}.sources a{color:#0070f2;text-decoration:none;word-break:break-all}.sources a:hover{text-decoration:underline}.source-tag{font-size:.75rem;color:#6a6d70;font-style:italic}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+const S = {de: [
+{id:"bw75",title:"Besonderheiten BW 7.5",phase:null,color:"#333",content:`<div class="system-alert" id="bw75">
+    <h3>⚠️ Besonderheiten für SAP BW 7.5</h3>
+    <table>
+      <tr><td>UI</td><td>Kein BW/4HANA Cockpit → nur <strong>Transaktion RSDPS</strong> in SAP GUI</td></tr>
+      <tr><td>BWMT (Eclipse)</td><td>BW Modeling Tools ab <strong>BWMT 1.27</strong> verfügbar (inkl. Scenario Generator)</td></tr>
+      <tr><td>Mindest-SP</td><td><strong>SP24 oder höher</strong> erforderlich</td></tr>
+      <tr><td>Catalog-Integration</td><td><strong>Nicht verfügbar</strong> (erst ab BW/4HANA 2023 SP04)</td></tr>
+      <tr><td>Konfiguration</td><td>SAP Note <strong>3590400</strong> (enthält Installationsanleitung + Hinweis auf SAP-Ticket)</td></tr>
+      <tr><td>SAP-Ticket</td><td><strong>Pflicht!</strong> Unter Komponente <strong>BDC-BW</strong> ein Ticket erstellen mit: System ID (SID), Installationsnummer, Datasphere Tenant URL. Ohne Ticket kann der Pilot-Note nicht freigeschaltet werden und die Task List schlägt fehl.</td></tr>
+      <tr><td>Sprache</td><td>DPG ist <strong>ausschließlich in Englisch</strong> verfügbar. Anmeldung am BW-System muss auf Englisch erfolgen, sonst drohen Fehler.</td></tr>
+      <tr><td>Installation</td><td>Per TCI via SAP Note <strong>3678407</strong> (Data Subscriptions 3.0) oder <strong>3593519</strong> (Data Subscriptions 2.0)</td></tr>
+    </table>
+    <span class="source-tag">Quellen: SAP Help – „Data Subscriptions"; Blog „The SAP BW DPG for SAP BDC"; Blog „Expose BW 7.5 objects as Data Products"</span>
+  </div>`},
+{id:"overview",title:"Überblick DPG",phase:null,color:"#333",content:`<h2 id="overview">Was ist der Data Product Generator?</h2>
+    <p>Der DPG ermöglicht es, Daten aus BW InfoProvidern (aDSOs, CompositeProvider, InfoObjects, MultiProvider, InfoCubes, Queries) über das <strong>ODP-Framework</strong> in <strong>Local Tables (File)</strong> im Object Store von SAP Datasphere zu extrahieren. Diese Local Tables können anschließend als <strong>Data Products</strong> veröffentlicht und z.B. nach SAP Databricks geteilt werden.</p>
+    <p style="margin-top:0.5rem"><strong>Kernkonzept:</strong> Eine <em>Data Subscription</em> definiert WAS (Quelle, Felder, Filter) und WOHIN (Target/Space in Datasphere) extrahiert wird – sie enthält keine Daten selbst, sondern die Extraktionsdefinition.</p>
+    <span class="source-tag">Quelle: SAP Help – „Data Subscription (DSUB and SUBS)"</span>`},
+{id:"toolcomp",title:"Funktionsvergleich Tools",phase:null,color:"#333",content:`<h2 id="toolcomp">🔧 Funktionsvergleich der Verwaltungs-Tools</h2>
+    <p style="margin-bottom:0.7rem">Die Data Subscriptions können über verschiedene Tools verwaltet werden. Für BW 7.5 stehen die <strong>Transaktion RSDPS</strong> (SAP GUI) und die <strong>BW Modeling Tools</strong> (Eclipse) zur Verfügung. Die Data Subscriptions App im BW/4HANA Cockpit ist nur ab BW/4HANA verfügbar und wird hier der Vollständigkeit halber aufgeführt.</p>
+    <table class="data">
+      <tr>
+        <th>Aktion</th>
+        <th>RSDPS<br><span style="font-weight:400;font-size:0.75rem">SAP GUI</span></th>
+        <th>BWMT Data Subscriptions<br><span style="font-weight:400;font-size:0.75rem">Eclipse</span></th>
+        <th>BWMT Scenario Generator<br><span style="font-weight:400;font-size:0.75rem">Eclipse</span></th>
+        <th class="col-disabled">Data Subscriptions App<br><span style="font-weight:400;font-size:0.75rem">BW/4HANA Cockpit<br>⛔ nicht für BW 7.5</span></th>
+      </tr>
+      <tr><td><strong>Create</strong></td><td>✅</td><td>❌</td><td>✅ Mass-Generate</td><td class="col-disabled">✅</td></tr>
+      <tr><td><strong>Create from Template</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">✅</td></tr>
+      <tr><td><strong>Edit</strong> (Extraction Mode, Selection, Projection, Scheduling)</td><td>✅</td><td>❌</td><td>⚠️ Nur vor Generate</td><td class="col-disabled">✅</td></tr>
+      <tr><td><strong>Activate / Deactivate</strong></td><td>✅ (einzeln)</td><td>✅ (auch Mass)</td><td>✅ (beim Generate)</td><td class="col-disabled">✅ (einzeln)</td></tr>
+      <tr><td><strong>Run</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">✅</td></tr>
+      <tr><td><strong>Delete</strong></td><td>✅ (einzeln)</td><td>✅ (auch Mass)</td><td>✅ (auch Mass)</td><td class="col-disabled">✅ (einzeln)</td></tr>
+      <tr><td><strong>Check</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">❌</td></tr>
+      <tr><td><strong>Runtime / Browse</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">✅ (View Executions)</td></tr>
+      <tr><td><strong>Reset Delta</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">❌</td></tr>
+      <tr><td><strong>Data Preview</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">❌</td></tr>
+      <tr><td><strong>Mass Delete by Target</strong></td><td>✅ (via Report)</td><td>❌</td><td>❌</td><td class="col-disabled">❌</td></tr>
+      <tr><td><strong>Maintain Target System</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">❌</td></tr>
+      <tr><td><strong>View Local Table (File)</strong></td><td>✅</td><td>✅ (CTRL+Click)</td><td>❌</td><td class="col-disabled">✅</td></tr>
+    </table>
+    <div class="callout callout-warn" style="margin-top:0.8rem">
+      <strong>⚠️ Fazit für BW 7.5:</strong> Für nachträgliche Änderungen an bestehenden Subscriptions (Edit) sowie für das <strong>Ausführen (Run)</strong> führt kein Weg an der <strong>Transaktion <code>RSDPS</code></strong> vorbei. Die BWMT bietet ergänzend Mass-Operationen (Activate, Delete) und den <strong>Scenario Generator</strong> für die initiale Generierung komplexer Modelle.
+    </div>
+    <span class="source-tag">Quelle: SAP Help – „RSDPS Transaction in SAP GUI", „BW Data Product Generator Perspective in BW Modeling Tools (BWMT)", „Data Subscriptions App in SAP BW/4HANA Cockpit"; eigene Konsolidierung</span>`},
+{id:"s01",title:"0.1 Systemlandschaft prüfen",phase:"Phase 0 – Voraussetzungen",color:"#e76500",content:`
+        <span class="badge badge-pflicht">Pflicht</span>
+      </div>
+      <div class="step-goal">Ziel: Sicherstellen, dass die technische Grundlage gegeben ist.</div>
+      <ul>
+        <li>SAP BW 7.5 mit <strong>mindestens SP24</strong></li>
+        <li>Das BW-System muss als <strong>SAP Business Warehouse, private cloud edition (BWPCE)</strong> in SAP Business Data Cloud betrieben werden</li>
+        <li>SAP Datasphere mit <strong>aktiviertem Object Store</strong> muss vorhanden sein</li>
+        <li>Konnektivität zwischen BW und Datasphere muss herstellbar sein</li>
+      </ul>
+      
+      <div class="callout callout-warn">
+        <strong>⚠️ Sprachrestriktion:</strong> Der Data Product Generator und alle TCIs sind <strong>ausschließlich in Englisch</strong> verfügbar. Die Anmeldung am BW-System muss auf Englisch erfolgen (<code>Sprache = EN</code>). Bei Anmeldung in einer anderen Sprache können unerwartete Fehler auftreten.<br>
+        <span class="source-tag">Quelle: SAP Note 3590400 – "Configuring the Data Product Generator", Abschnitt "Install the Main TCI"</span>
+      </div>
+      <div class="callout callout-danger">
+        <strong>⚠️ Lizenz-Restriktion:</strong> Der DPG ist laut SAP nur für BW-Systeme zugelassen, die als BWPCE in der SAP Private Cloud betrieben werden – <strong>nicht</strong> für On-Premise-Standalone.<br>
+        <span class="source-tag">Quelle: Blog „The SAP BW DPG for SAP BDC"</span>
+      </div>
+      <div class="callout callout-info">
+        <strong>ℹ️ Offener Punkt:</strong> Ob es mittlerweile Ausnahmen für On-Premise gibt, konnte nicht sicher geklärt werden. Der Blog „BW DPG to Databricks" erwähnt: <em>„speak to your SAP team for potential options"</em>. <strong>Bitte intern mit SAP klären.</strong>`},
+{id:"s02",title:"0.2 SAP Notes einspielen",phase:"Phase 0 – Voraussetzungen",color:"#e76500",content:`
+        <span class="badge badge-pflicht">Pflicht</span>
+      </div>
+      <div class="step-goal">Ziel: Den DPG-Code im BW-System installieren.</div>
+      <p><strong>Relevante SAP Notes:</strong></p>
+      <table class="data">
+        <tr><th>Note</th><th>Inhalt</th></tr>
+        <tr><td><code>3590400</code></td><td>Konfigurations-Anleitung für den DPG (erster Schritt: enthält Installationsanleitung und Hinweis auf SAP-Ticket-Erstellung)</td></tr>
+        <tr><td><code>3678407</code></td><td>TCI für Data Subscriptions 3.0 – aktuellste Version des DPG-Codes</td></tr>
+        <tr><td><code>3593519</code></td><td>TCI für Data Subscriptions 2.0 – ältere Version (nur relevant falls 3678407 nicht anwendbar)</td></tr>
+        <tr><td><code>3590318</code></td><td>Pilot BW Configuration – wird nach Support Case freigeschaltet (Pflicht)</td></tr>
+        <tr><td><code>3581186</code></td><td>OA2C: RFC API (Pflicht)</td></tr>
+        <tr><td><code>3089413</code></td><td>CVE-2023-0014: Capture-replay vulnerability in SAP NetWeaver AS (Pflicht)</td></tr>
+        <tr><td><code>3224161</code></td><td>Voraussetzung für Note 3089413 (Pflicht)</td></tr>
+        <tr><td><code>3600085</code></td><td>Note Analyzer for UI5 Corrections (nur BW/4HANA 2021/2023)</td></tr>
+      </table>
+      <ol>
+        <li>SAP Note 3590400 als Einstiegspunkt lesen – enthält die vollständige Installationsanleitung und den Hinweis, ein SAP-Ticket zu erstellen</li>
+        <li>SAP Note 3678407 (Data Subscriptions 3.0) über den <strong>Note Analyzer</strong> prüfen und alle Korrekturen einspielen. Falls nicht anwendbar: SAP Note 3593519 (Data Subscriptions 2.0) verwenden</li>
+        <li>Note Analyzer für Data Product Generator ausführen → alle Checks müssen grün sein</li>
+      </ol>
+      <div class="callout callout-warn">
+        <strong>⚠️ Warnung – Zertifikate:</strong> SSL-Zertifikate müssen korrekt in <code>STRUST</code> hinterlegt sein, damit die Verbindung zu Datasphere funktioniert.<br>
+        <span class="source-tag">Quelle: Blog „BW DPG to Databricks"</span>`},
+{id:"s03",title:"0.3 DPG-Konfiguration",phase:"Phase 0 – Voraussetzungen",color:"#e76500",content:`
+        <span class="badge badge-pflicht">Pflicht</span>
+      </div>
+      <div class="step-goal">Ziel: Die Verbindung zwischen BW und SAP Datasphere herstellen, BW File Space anlegen.</div>
+      <ol>
+        <li>Konfigurationsaufgabe <code>SAP_BW_BDC_CONFIGURATION</code> ausführen (Details in SAP Note 3590400)</li>
+        <li>Dabei wird ein initialer <strong>BW File Space</strong> in Datasphere angelegt (Typ: HDLFS)</li>
+        <li>Über <code>RSDPS</code> → <strong>Goto → Maintain Target System</strong> können <strong>weitere Targets</strong> konfiguriert werden, die auf unterschiedliche Spaces verweisen. Bei der Erstellung einer Subscription wird der gewünschte Target Space ausgewählt.</li>
+      </ol>
+      <div class="callout callout-info">
+        <strong>ℹ️ Multiple Targets:</strong> Der DPG unterstützt inzwischen <strong>mehrere Datasphere Targets und Spaces</strong> pro BW-System, um Daten z.B. nach Fachbereichen zu separieren. Die Konfigurationsaufgabe ist zudem <strong>wiederholbar</strong>.<br>
+        <span class="source-tag">Quelle: SAP Architecture Center – „Modernizing SAP BW with SAP BDC" (Feature: „Supporting multiple SAP Datasphere targets and spaces"); Blog „BW DPG to Databricks"</span>
+      </div>
+      <div class="callout callout-warn">
+        <strong>⚠️ BW File Space ist read-only:</strong> Es können keine eigenen Objekte erstellt werden (Ausnahme: Task Chains). Datenverwaltung (z.B. Löschen) ist möglich. Local Tables können per Sharing an andere Spaces geteilt werden.<br>
+        <span class="source-tag">Quelle: SAP Help – „Creating Data Subscriptions"</span>
+		</div>
+		`},
+{id:"s04",title:"0.4 Target(s) konfigurieren",phase:"Phase 0 – Voraussetzungen",color:"#e76500",content:`
+        <span class="badge badge-pflicht">Pflicht</span>
+        <span class="badge badge-tool">RSDPS</span>      
+      <div class="step-goal">Ziel: Mindestens ein Ziel anlegen, das für Data Subscriptions ausgewählt werden kann.
+      <ol>
+        <li>Transaktion <code>RSDPS</code> → Menü <strong>Goto → Maintain Target System</strong></li>
+        <li>Target anlegen (verweist auf BW File Space / Datasphere Tenant)</li>
+        <li>Target Type wird automatisch auf <strong>HDLFS</strong> gesetzt</li>
+        <li>Optional: Ein Target als <strong>Preferred Target</strong> markieren</li>
+      </ol>
+      <span class="source-tag">Quelle: SAP Help – „RSDPS Transaction in SAP GUI", „Configuring Targets for the Data Product Generator"</span>`},
+{id:"s05",title:"0.5 Berechtigungen DSP",phase:"Phase 0 – Voraussetzungen",color:"#e76500",content:`
+        <span class="badge badge-pflicht">Pflicht</span>
+      </div>
+      <div class="step-goal">Ziel: Sicherstellen, dass Benutzer in Datasphere die nötigen Rollen haben.
+      <p><strong>Erforderliche Scoped Roles (mindestens eine):</strong></p>
+      <ul>
+        <li><strong>DW Space Administrator</strong> – Benutzerverwaltung &amp; Monitoring</li>
+        <li><strong>DW Integrator</strong> – Überwachung der Datenintegration im Space</li>
+        <li><strong>DW Modeler</strong> – Local Tables an andere Spaces teilen</li>
+      </ul>
+      <span class="source-tag">Quelle: Blog „Expose BW 7.5 objects as Data Products in Databricks"</span>`},
+{id:"s06",title:"0.6 Berechtigungen BW",phase:"Phase 0 – Voraussetzungen",color:"#e76500",content:`
+	 <span class="badge badge-pflicht">Pflicht</span>
+	 <div class="step-goal">Ziel: Sicherstellen, dass die benötigten Berechtigungen im BW-System vergeben sind.</div>
+      <p><strong>Für die Konnektivität (Connectivity Setup):</strong></p>
+      <ul>
+        <li>Berechtigungsobjekt <strong><code>S_RS_DDSTG</code></strong> für den Dialog-User</li>
+      </ul>
+      <p style="margin-top:0.7rem"><strong>Für das Erstellen von Data Subscriptions:</strong></p>
+      <ul>
+        <li>Berechtigungsobjekt <strong><code>S_RS_DDS</code></strong> für den Dialog-User</li>
+      </ul>
+      <p style="margin-top:0.7rem"><strong>Für Background-Runs (Process Chains):</strong></p>
+      <ul>
+        <li>Berechtigungsobjekt <strong><code>S_RS_DDS</code></strong> für den BW-Hintergrundbenutzer (z.B. BWREMOTE)</li>
+      </ul>
+      <p style="margin-top:0.7rem"><strong>Für die OAuth-Konfiguration (STRUST, SOAUTH2_CLIENT):</strong></p>
+      <table class="data">
+        <tr><th>Berechtigungsobjekt</th><th>Attribut</th><th>Wert</th></tr>
+        <tr><td><code>S_OA2C_ADM</code></td><td>ACTVT</td><td>01, 02, 03, 06</td></tr>
+        <tr><td><code>S_SEC_COMM</code></td><td>ACTVT</td><td>03</td></tr>
+        <tr><td><code>S_OA2C_USE</code></td><td>OA2C_PROF</td><td>BW4_DWC</td></tr>
+        <tr><td></td><td>ACTVT</td><td>16</td></tr>
+        <tr><td><code>S_PSE_ADM</code></td><td>ACTVT</td><td>01</td></tr>
+      </table>
+      <div class="callout callout-info">
+        <strong>ℹ️ Nur BW/4HANA:</strong> Zusätzlich die Rolle <strong><code>SAP_BW4_MODELER_FOR_BDC</code></strong> zuweisen.
+      </div>
+      <span class="source-tag">Quelle: SAP Note 3590400 – "Configuring the Data Product Generator", Abschnitt "Authorizations in SAP BW or SAP BW/4HANA"</span>`},
+{id:"s11",title:"1.1 Scenario Generator (BWMT)",phase:"Phase 1 – Subscriptions",color:"#0070f2",content:`
+        <span class="badge badge-empfohlen">Empfohlen</span>
+        <span class="badge badge-tool">BWMT / Eclipse</span>
+      </div>
+      <div class="step-goal">Ziel: Gesamtes BW-Modell inkl. aller Abhängigkeiten (z.B. InfoObjects eines CompositeProviders) als Subscriptions abbilden und in einem Schritt generieren.</div>
+      <p><strong>Voraussetzung:</strong> BWMT Version <strong>1.27</strong> (für die BW Data Product Generator Perspective: <strong>1.27.1</strong>)</p>
+      <p><strong>Konzept:</strong> Ein <em>Scenario</em> = Liste von Referenzen zwischen Data Subscriptions zum vollständigen Abbilden eines BW-Modells. Der <em>Scenario Tree</em> speichert Abhängigkeiten und berücksichtigt vorhandene Subscriptions (keine Duplikate).</p>
+      <p><strong>Vorgehen:</strong></p>
+      <ol>
+        <li>Eclipse: <strong>Window → Show View → Business Warehouse → Scenario Generator (Data Subscriptions)</strong></li>
+        <li>Tab <strong>Scenario Core Objects</strong>: BW-Objekte hinzufügen (aDSOs, CompositeProvider, etc.)</li>
+        <li><strong>Collection Grouping</strong> wählen (Empfehlung: „Only Necessary Objects")</li>
+        <li><strong>Association Levels</strong> setzen (Default: 4)</li>
+        <li><strong>Target</strong> auswählen (Pflicht) und optional <strong>Process Chain Variant</strong></li>
+        <li>Weitere Optionen setzen (z.B. „Use Existing Data Subscriptions", „Consider Transport Configuration")</li>
+        <li><strong>Collect</strong> klicken → Scenario Tree wird aufgebaut</li>
+        <li>Tab <strong>Object Relations → Selection to Generate Data Subscriptions</strong>: Subscriptions prüfen und individuell anpassen (Description, Extraction Mode, Selections, Projections, Package)</li>
+        <li><strong>Mode</strong> wählen (empfohlen: „Activate in Background")</li>
+        <li><strong>Generate</strong> klicken → alle Subscriptions werden auf einmal erzeugt</li>
+        <li>Ergebnisse im Tab <strong>Messages</strong> prüfen</li>
+      </ol>
+
+      <div class="callout callout-warn">
+        <strong>⚠️ Warnung – gleiches Target:</strong> Alle Subscriptions in einem Scenario müssen <strong>dasselbe Target</strong> haben!
+      </div>
+	  <div class="callout callout-warn">
+        <strong>⚠️ Activation Mode:</strong> „Activate Directly" verbraucht viel Rechenleistung → besser <strong>„Activate in Background"</strong> wählen.<br>
+        <span class="source-tag">Quelle: SAP Help – „Generating Data Subscriptions"</span>
+      </div>
+	  <div class="callout callout-warn">
+        <strong>⚠️ Wichtig – Run nicht in BWMT möglich:</strong> Nach dem Generieren müssen die Subscriptions über die <strong>Transaktion <code>RSDPS</code></strong> ausgeführt werden (siehe Phase 2). Das Ausführen (Run) ist in der BWMT nicht möglich.<br>
+        <span class="source-tag">Quelle: SAP Help – „Generating Data Subscriptions", „BW Data Product Generator Perspective in BW Modeling Tools (BWMT)"</span>
+	  </div>
+	  <div class="callout callout-info">
+        <strong>ℹ️ Vorteile gegenüber RSDPS:</strong> Mass-Generierung aller Subscriptions inkl. Abhängigkeiten, Mass-Aktivierung, Package-Zuweisungen für alle Subscriptions auf einmal, Wiederverwendung bestehender Subscriptions.
+      </div>
+      <div class="callout callout-info">
+        <strong>ℹ️ Performance-Optimierung:</strong> Bei großen Datenmengen können folgende RSADMIN-Parameter über Report <code>SAP_RSADMIN_MAINTAIN</code> (SE38) angepasst werden:<br>
+        • <code>RSDDS_PACKSIZE_CSV</code> – Package-Größe (Default: 50 MB)<br>
+        • <code>RSDDS_PARALLEL_LOAD = X</code> – Parallele Verarbeitung aktivieren (ab DPG 3.0 per Default aktiv)<br>
+        Data Subscription Runs werden über den Queued Task Manager (QTM) verarbeitet, der bis zu 75% der Batch-Prozesse nutzt (konfigurierbar, siehe SAP Note 3675751).<br>
+        <span class="source-tag">Quelle: SAP Note 3590400 – "Optimizing Data Subscription Performance"</span>
+      </div>
+	  `},
+{id:"s12",title:"1.2 Optionale Einstellungen",phase:"Phase 1 – Subscriptions",color:"#0070f2",content:`
+        <span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">BWMT (vor Generate) oder RSDPS</span>
+      <div class="step-goal">Ziel: Die Extraktion feinjustieren (Felder, Filter, Delta, Scheduling).</div>
+      <p>Diese Einstellungen können <strong>vor dem Generieren</strong> im Scenario Generator (Schritt 1.1, Punkt 8) oder <strong>nach dem Erstellen</strong> im Edit-Modus der Transaktion <code>RSDPS</code> vorgenommen werden:</p>
+      <table class="data">
+        <tr><th>Einstellung</th><th>Beschreibung</th><th>Hinweis</th></tr>
+        <tr><td><strong>Extraction Mode</strong></td><td><code>Full</code> oder <code>Delta</code></td><td>Delta = inkrementelle Extraktion</td></tr>
+        <tr><td><strong>Scheduling</strong></td><td><code>No Scheduling</code> (manuell) oder <code>Process Chain</code></td><td>Bei Process Chain: Variant angeben</td></tr>
+        <tr><td><strong>Selections</strong></td><td>Datenset einschränken (Filter auf Felder)</td><td>Reduziert Datenvolumen</td></tr>
+        <tr><td><strong>Projections</strong></td><td>Felder auswählen / abwählen</td><td>Key-Felder sind immer Pflicht</td></tr>
+      </table>
+
+      <div class="callout callout-danger">
+        <strong>⚠️ Kritisches Zeitfenster für Änderungen:</strong><br>
+        <strong>Vor dem ersten Run:</strong> Description, Extraction Mode, Scheduling, Selection, Projection änderbar.<br>
+        <strong>Nach dem ersten Run:</strong> Nur noch <strong>Description</strong> änderbar – alles andere wird <strong>read-only</strong>!<br>
+        Nachträgliche Änderungen sind <strong>nur über <code>RSDPS</code></strong> möglich (nicht in der BWMT Data Subscriptions View).<br>
+        <span class="source-tag">Quelle: SAP Help – „Editing Data Subscriptions"</span>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>⚠️ Process Chain Type:</strong> Muss sein: <strong>Load Process and Postprocessing → Data Provisioning Subscription</strong>.<br>
+        <span class="source-tag">Quelle: SAP Help – „Creating Data Subscriptions in the SAP GUI"</span>`},
+{id:"s13",title:"1.3 Manuell in RSDPS",phase:"Phase 1 – Subscriptions",color:"#0070f2",content:`
+        <span class="badge badge-optional">Alternative zu 1.1</span>
+        <span class="badge badge-tool">RSDPS</span>
+      </div>
+      <div class="step-goal">Ziel: Eine einzelne Extraktionsdefinition für einen BW InfoProvider erstellen – ohne Scenario Generator.</div>
+      <p><strong>Vorgehen in <code>RSDPS</code> (SAP GUI):</strong></p>
+      <ol>
+        <li>Transaktion <code>RSDPS</code> aufrufen</li>
+        <li>Button <strong>Create</strong> klicken</li>
+        <li><strong>Source Name:</strong> BW InfoProvider auswählen (aDSO, CompositeProvider, InfoObject, MultiProvider, InfoCube oder Query) – Source Type wird automatisch auf <strong>ODP</strong> gesetzt</li>
+        <li><strong>Target Name:</strong> Das konfigurierte Target auswählen – Target Type wird automatisch auf <strong>HDLFS</strong> gesetzt</li>
+        <li><strong>Save</strong> klicken</li>
+        <li><strong>Package</strong> auswählen</li>
+      </ol>
+      <div class="callout callout-danger">
+        <strong>⚠️ Package-Warnung:</strong> Standardmäßig wird <code>$TMP</code> zugewiesen (= lokal, <strong>nicht transportierbar</strong>). Für produktive Szenarien unbedingt ein transportierbares Package wählen!<br>
+        <span class="source-tag">Quelle: SAP Help – „Creating Data Subscriptions in the SAP GUI"</span>
+      
+      <p><strong>Was wird automatisch generiert:</strong></p>
+      <ul>
+        <li>Technischer Name (nicht änderbar)</li>
+        <li>Beschreibung (basierend auf InfoProvider, änderbar)</li>
+        <li>Zeitstempel, Ersteller, Owner</li>
+        <li>Target-Informationen: Techn. Name der Local Table, File Path, CSV-Eigenschaften</li>
+      </ul>
+      <span class="source-tag">Quelle: SAP Help – „Creating Data Subscriptions in the SAP GUI"</span>`},
+{id:"s14",title:"1.4 Aus Template erstellen",phase:"Phase 1 – Subscriptions",color:"#0070f2",content:`
+        <span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">RSDPS</span>
+      </div>
+      <div class="step-goal">Ziel: Schnellere Erstellung durch Kopie einer bestehenden Subscription.</div>
+      <ol>
+        <li>Bestehende Subscription in der RSDPS-Liste auswählen</li>
+        <li><strong>Create from Template</strong> klicken</li>
+        <li>Optional: Source, Target, Extraction Mode, Scheduling anpassen</li>
+        <li>Save</li>
+      </ol>
+      <div class="callout callout-info">
+        <strong>ℹ️</strong> Auch wenn das Template vom Typ SUBS ist, wird die neue Subscription automatisch als <strong>DSUB</strong> erstellt (= transportierbar).<br>
+        <span class="source-tag">Quelle: SAP Help – „Creating Data Subscriptions from Template"</span>`},
+{id:"s21",title:"2.1 Aktivieren",phase:"Phase 2 – Aktivieren",color:"#188918",content:`
+        <span class="badge badge-pflicht">Pflicht</span>
+        <span class="badge badge-tool">BWMT oder RSDPS</span>
+      </div>
+      <div class="step-goal">Ziel: Subscription ausführbar machen und Local Table (File) in Datasphere erstellen.</div>
+
+      <p><strong>Option A – Über BWMT (empfohlen bei vielen Subscriptions):</strong></p>
+      <ul>
+        <li>In der <strong>Data Subscriptions View</strong>: Eine oder mehrere Subscriptions auswählen (via <code>CTRL + Click</code>)</li>
+        <li>Rechtsklick → <strong>Activate</strong></li>
+        <li>Vorteil: <strong>Mass-Aktivierung</strong> mehrerer Subscriptions auf einmal möglich</li>
+      </ul>
+
+      <p style="margin-top:0.7rem"><strong>Option B – Über RSDPS:</strong></p>
+      <ul>
+        <li>Data Subscription auswählen → <strong>Edit</strong> → <strong>Activate Data Subscription</strong></li>
+      </ul>
+
+      <p style="margin-top:0.7rem"><strong>Was passiert bei der Aktivierung:</strong></p>
+      <ul>
+        <li>Status wechselt von <strong>Inactive → Active</strong></li>
+        <li>SAP Datasphere-Entity wird <strong>asynchron</strong> erstellt und deployed</li>
+        <li><strong>Local Table (File)</strong> wird mit der Subscription-ID als qualified name angelegt</li>
+        <li>Semantics Usage Type: <strong>Local Table (Fact)</strong></li>
+      </ul>
+      <div class="callout callout-info">
+        <strong>ℹ️ Versionen:</strong> Data Subscriptions haben eine <strong>M (Modified)</strong> und <strong>A (Active)</strong> Version. Bei Änderungen muss erneut aktiviert werden, damit A = M. Transport ist nur möglich wenn A = M.<br>
+        <span class="source-tag">Quelle: SAP Help – „Transporting and Migrating Data Subscriptions"</span>
+      </div>
+      <div class="callout callout-info">
+        <strong>ℹ️ Roadmap – Technischer Name der Local Table:</strong> Aktuell wird der technische Name der Local Table in Datasphere automatisch aus der Subscription-ID generiert und kann nicht beeinflusst werden. Laut SAP Roadmap ist geplant, den technischen Namen zukünftig bei der Erstellung setzen zu können.<br>
+        🔗 <a href="https://roadmaps.sap.com/board?PRODUCT=73555000100800004851&range=CURRENT-LAST#;INNO=000D3AA914A11FD0AFC333763940D81F" target="_blank" style="color:var(--sap-blue)">SAP Roadmap Item ansehen</a>`},
+{id:"s22",title:"2.2 Ausführen",phase:"Phase 2 – Aktivieren",color:"#188918",content:`
+        <span class="badge badge-pflicht">Pflicht</span>
+        <span class="badge badge-tool">RSDPS (manuell) oder Process Chain (eingeplant)</span>
+      </div>
+      <div class="step-goal">Ziel: Die tatsächliche Datenextraktion durchführen.
+
+      <p><strong>Option A – Manuell über RSDPS:</strong></p>
+      <ol>
+        <li>Transaktion <code>RSDPS</code> öffnen</li>
+        <li>Data Subscription in der Liste auswählen</li>
+        <li><strong>Run</strong> klicken</li>
+      </ol>
+
+      <p style="margin-top:0.7rem"><strong>Option B – Automatisch über Process Chain:</strong></p>
+      <ul>
+        <li>Wenn die Subscription auf Scheduling „Process Chain" konfiguriert ist, wird die Extraktion <strong>über die Prozesskette</strong> ausgelöst (z.B. zeitgesteuert oder nach einem vorgelagerten Ladeschritt)</li>
+        <li>Die Konfiguration der Process Chain erfolgt über <code>RSA1</code> oder <code>RSPC1</code> (siehe Phase 3)</li>
+      </ul>
+
+      <p style="margin-top:0.7rem"><strong>Ergebnis:</strong> Daten werden aus dem BW InfoProvider in die Local Table (File) extrahiert. Bei Delta-Modus nur geänderte Daten.</p>
+      <span class="source-tag">Quelle: SAP Help – „RSDPS Transaction in SAP GUI" → Abschnitt „Actions for Data Subscriptions"</span>`},
+{id:"s23",title:"2.3 Ergebnis prüfen",phase:"Phase 2 – Aktivieren",color:"#188918",content:`
+        <span class="badge badge-empfohlen">Empfohlen</span>
+        <span class="badge badge-tool">RSDPS + ggf. RSA1</span>
+      </div>
+      <div class="step-goal">Ziel: Erfolg der Extraktion verifizieren.</div>
+
+      <p><strong>In RSDPS (für manuelle und eingeplante Runs):</strong></p>
+      <ul>
+        <li>Die Spalte <strong>Last Run</strong> in der Subscriptions-Liste zeigt den Status des letzten Laufs – unabhängig davon, ob manuell oder per Kette ausgelöst</li>
+        <li><strong>Runtime</strong> klicken → Detailinformationen zum letzten Run</li>
+        <li><strong>Browse</strong> klicken → Daten in der Local Table (File) anzeigen</li>
+        <li><strong>Check</strong> klicken → Potenzielle Probleme erkennen (Source, Target, Verbindung, Local Table)</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <strong>ℹ️ Bei eingeplanten Runs (Process Chain):</strong> Für das detaillierte Log (Dauer, Fehlermeldungen, Einzelschritte) empfiehlt sich zusätzlich das <strong>Prozesskettenlog</strong> in <code>RSA1</code> → Monitoring oder im Process Chain Editor des BW/4HANA Cockpits.<br>
+      
+      <table class="data">
+        <tr><th>Status</th><th>Bedeutung</th></tr>
+        <tr><td>🟢 Last Run Successful</td><td>Extraktion erfolgreich</td></tr>
+        <tr><td>🔴 Last Run Failed</td><td>Extraktion fehlgeschlagen</td></tr>
+        <tr><td>⚪ Not Run</td><td>Noch nicht ausgeführt</td></tr>
+      </table>
+      <span class="source-tag">Quelle: SAP Help – „RSDPS Transaction in SAP GUI" → Abschnitt „Columns and Values"</span>`},
+{id:"s31",title:"3.1 Process Chain",phase:"Phase 3 – Automatisierung",color:"#7c6bbf",content:`
+        <span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">RSDPS + RSA1/RSPC1</span>
+      </div>
+      <div class="step-goal">Ziel: Extraktion automatisiert und zeitgesteuert ausführen.</div>
+      <ol>
+        <li>In <code>RSA1</code> oder <code>RSPC1</code>: <strong>Neue Process Chain anlegen</strong> oder einen neuen Schritt in eine <strong>bestehende Process Chain einfügen</strong></li>
+        <li>Process Type: <strong>Load Process and Postprocessing → Data Provisioning Subscription</strong></li>
+        <li>Neue <strong>Process Variant</strong> anlegen (noch leer, ohne Subscriptions)</li>
+        <li>In <code>RSDPS</code>: Subscription bearbeiten → Scheduling auf „Process Chain" → Variant zuweisen</li>
+        <li>Subscription aktivieren</li>
+        <li>In RSA1: Variant prüfen → Subscription sollte jetzt erscheinen</li>
+        <li>Process Chain ausführen</li>
+      </ol>
+      <div class="callout callout-warn">
+        <strong>⚠️ Warnung – leere Variant:</strong> Die Process Variant wird zunächst <strong>leer</strong> angelegt. Subscriptions werden durch Zuweisung <em>in der Subscription selbst</em> mit der Variant verknüpft – nicht umgekehrt!<br>
+      <span class="source-tag">Quelle: SAP Help – „Scheduling Data Subscriptions With Process Chains"</span>
+	  </div>
+	  <div class="callout callout-info">
+        <strong>ℹ️ Bestehende Ketten:</strong> Der DPG-Schritt muss nicht zwingend in einer neuen Process Chain stehen. Er kann als <strong>zusätzlicher Schritt in eine bereits vorhandene Ladekette</strong> integriert werden – z.B. direkt nach dem Laden der Daten in den InfoProvider, um die Extraktion in den Object Store automatisch anzuschließen.<br>
+        <span class="source-tag">Quelle: SAP Help – „Scheduling Data Subscriptions With Process Chains"</span>
+      </div>
+	  <div class="callout callout-info">
+        <strong>ℹ️ Technical User empfohlen:</strong> Für Process Chains und Transporte empfiehlt SAP, die OAuth-Konfiguration auf einen <strong>Technical User</strong> in Datasphere umzustellen (statt Interactive Usage). Dies vereinfacht die Authentifizierung und ist Voraussetzung für Background-Runs. Details siehe SAP Note 3590400, Kapitel „Switching the OAuth Configuration to a Technical User“.<br>
+        <span class="source-tag">Quelle: SAP Note 3590400 – "Configuring the Data Product Generator"</span>
+      </div>       
+      `},
+{id:"s32",title:"3.2 Task Chains",phase:"Phase 3 – Automatisierung",color:"#7c6bbf",content:`
+        <span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">RSDPS + Datasphere</span>
+      </div>
+      <div class="step-goal">Ziel: End-to-End-Automatisierung BW ↔ Datasphere (z.B. Merge-Task nach Extraktion).</div>
+      <ol>
+        <li>In Datasphere: Task Chain erstellen (auch im BW File Space möglich)</li>
+        <li>In BW: Process Chain erstellen/bearbeiten und neuen Schritt einfügen</li>
+        <li>Process Type: <strong>General Services → Task Chain</strong></li>
+        <li>Target, Space und Task Chain angeben</li>
+        <li>Speichern, Aktivieren, Ausführen</li>
+      </ol>
+      <div class="callout callout-warn">
+        <strong>⚠️ Voraussetzung:</strong> Die Integration von Task Chains in Process Chains ist nur sinnvoll, wenn die zugehörige Data Subscription <strong>eingeplant (Scheduling = Process Chain)</strong> ist – nicht auf manueller Ausführung steht. Andernfalls wird die Task Chain nie automatisch ausgelöst.<br>
+        <span class="source-tag">Quelle: SAP Help – „Running Task Chains in Process Chains"</span>
+      
+      <span class="source-tag">Quelle: SAP Help – „Running Task Chains in Process Chains"</span>`},
+{id:"s41",title:"4.1 Local Table teilen",phase:"Phase 4 – Data Products",color:"#cc1919",content:`
+        <span class="badge badge-optional">Optional – nur für Reporting/Modellierung</span>
+      </div>
+      <div class="step-goal">Ziel: Extrahierte Daten für Modellierung und Reporting in Datasphere verfügbar machen. Nicht erforderlich, wenn das Ziel ausschließlich die Weitergabe als Data Product via Delta Sharing ist.</div>
+      <ul>
+        <li>Local Table liegt im <strong>BW File Space</strong> (read-only, Object Store / HDLFS)</li>
+        <li>Per <strong>Sharing</strong> an andere Spaces weitergeben → dort für Modellierung auf HANA-Ebene verwenden</li>
+        <li>Struktur der Local Table kann nicht geändert werden, solange die Subscription existiert</li>
+      </ul>
+      <div class="callout callout-info">
+        <strong>ℹ️ Wann ist dieser Schritt nötig?</strong> Nur wenn die BW-Daten in Datasphere für analytische Modelle, Views oder SAC-Stories genutzt werden sollen. Für den reinen <strong>Data-Product-/Delta-Sharing-Pfad</strong> (Schritt 4.2 + 4.3) kann das Data Product direkt aus dem BW File Space erstellt werden – ein Sharing an einen anderen Space ist dann nicht erforderlich.
+      
+      <span class="source-tag">Quelle: SAP Help – „Creating Data Subscriptions"</span>`},
+{id:"s42",title:"4.2 Data Product erstellen",phase:"Phase 4 – Data Products",color:"#cc1919",content:`
+        <span class="badge badge-pflicht">Pflicht (für Data Product-Szenario)</span>
+      </div>
+      <div class="step-goal">Ziel: Aus der Local Table im BW File Space ein custom Data Product erstellen und im Catalog listen.</div>
+      <p><strong>Voraussetzung:</strong> Ein <strong>Formations Profile</strong> muss im Data Sharing Cockpit angelegt sein (Visibility: „Formations"). Siehe SAP Help – „Creating Custom Delta Share Data Products - Creating Formations Profile".</p>
+      <p><strong>Vorgehen in SAP Datasphere:</strong></p>
+      <ol>
+        <li><strong>Data Sharing Cockpit → My Data Products</strong> öffnen</li>
+        <li><strong>Create Product</strong> klicken</li>
+        <li><strong>Business Name</strong> eingeben (z.B. „Sales Orders") – Technical Name wird automatisch generiert</li>
+        <li>Im Abschnitt <strong>Overview</strong>: Beschreibung eingeben</li>
+        <li>Im Abschnitt <strong>Product Details</strong>: <strong>Data Category</strong> auswählen (z.B. „Company Data") – Felder Contexts, Delivery Mode und Contract Type werden automatisch gesetzt (Formations / Delta Share / Free)</li>
+        <li>Im Abschnitt <strong>Product Artifacts</strong>: Den <strong>BW File Space</strong> als Product Artifact Space auswählen</li>
+        <li>Über das <strong>Plus-Icon</strong> die gewünschte <strong>Local Table (File)</strong> hinzufügen und bestätigen</li>
+        <li><strong>Save Changes</strong> klicken</li>
+        <li><strong>Switch Status → List</strong> wählen, um das Data Product im Catalog zu listen</li>
+      </ol>
+      <div class="callout callout-info">
+        <strong>ℹ️</strong> Dieser Schritt findet komplett in <strong>SAP Datasphere</strong> statt. Das Data Product ist ein <strong>Custom Data Product</strong>, das von der eigenen Organisation verwaltet wird (nicht von SAP). Nach dem Listen erscheint es im Catalog in Datasphere und im BDC Cockpit.<br>
+        <span class="source-tag">Quelle: SAP Help – „Creating Data Products (Data Sharing Cockpit)"</span>
+      </div>
+      <div class="callout callout-warn">
+        <strong>⚠️ Synchronisierung:</strong> Es kann etwas dauern, bis das Data Product im Catalog erscheint, da die Systeme zuerst synchronisieren müssen. Bei Bedarf kann der Catalog-Administrator eine manuelle Synchronisierung anstoßen.<br>
+        <span class="source-tag">Quelle: SAP Help – „Creating Data Products (Data Sharing Cockpit)"</span>
+      </div>
+      <div class="callout callout-info">
+        <strong>ℹ️ Roadmap – Automatisierung geplant:</strong> Laut SAP Roadmap ist geplant, die manuelle Data-Product-Erstellung aus der Local Table zukünftig zu automatisieren. Dieser Schritt wird damit perspektivisch obsolet.<br>
+        🔗 <a href="https://roadmaps.sap.com/board?PRODUCT=73555000100800004851&range=CURRENT-LAST#;INNO=000D3AAC9DD21FD0A4C203167B3998EE" target="_blank" style="color:var(--sap-blue)">SAP Roadmap Item ansehen</a>`},
+{id:"s43",title:"4.3 BDC Connect (Delta Share)",phase:"Phase 4 – Data Products",color:"#cc1919",content:`
+        <span class="badge badge-optional">Optional</span>
+      </div>
+      <div class="step-goal">Ziel: Das gelistete BW Data Product via Delta Sharing an Databricks/Snowfalke/MS-Fabrics(Q3-2026)/Google BigQuery(Q4-2026) weitergeben – für AI/ML- und Advanced-Analytics-Szenarien.</div>
+      <p><strong>Voraussetzung:</strong> Externe Tool muss über SAP BDC Connect angebunden sein.</p>
+      <p><strong>Vorgehen im SAP Business Data Cloud Cockpit:</strong></p>
+      <ol>
+        <li><strong>Catalog &amp; Marketplace → Search</strong> öffnen</li>
+        <li>Das erstellte BW Data Product suchen und Details-Seite öffnen</li>
+        <li><strong>Share</strong> klicken → <strong>Manage Access</strong>-Dialog öffnet sich</li>
+        <li><strong>Target System:</strong> Das externe Tool auswählen</li>
+        <li><strong>Share Name</strong> eingeben (nur Kleinbuchstaben, nachträglich nicht änderbar)</li>
+        <li><strong>Workspace</strong> im externen Tool auswählen (ein oder mehrere)</li>
+        <li><strong>Share</strong> klicken</li>
+      </ol>
+      <p style="margin-top:0.7rem"><strong>Ergebnis:</strong> Das Data Product ist im externen Tool verfügbar (SAP Databricks: <strong>Delta Table im Unity Catalog</strong> (Ordner: Delta Share Received) ). Von dort können Notebooks für Data Preparation, Training, Forecasting etc. erstellt werden. Die Ergebnisse können als Data Product zurück in den BDC Catalog geteilt werden.</p>
+      <div class="callout callout-info">
+        <strong>ℹ️ Zero-Copy Sharing:</strong> Delta Sharing teilt Daten live über Plattformen, Clouds und Regionen hinweg – ohne die Daten zu kopieren oder zu verschieben.<br>
+        <span class="source-tag">Quelle: SAP Help – „Sharing Data Products to SAP Databricks"</span>`},
+{id:"s51",title:"5.1 SUBS → DSUB",phase:"Phase 5 – Transport",color:"#6b7280",content:`
+        <span class="badge badge-optional">Optional (falls alte Subscriptions vorhanden)</span>
+        <span class="badge badge-tool">RSDPS / SE38</span>
+      </div>
+      <div class="step-goal">Ziel: Bestehende lokale Subscriptions transportierbar machen.</div>
+      <ol>
+        <li><code>SE38</code> → Report <code>RSDDS_DSUB_MIGRATION</code> ausführen</li>
+        <li>Zu migrierende Subscriptions auswählen</li>
+        <li>Transport Request und Package angeben</li>
+        <li>Optional: <strong>Enable Simulation</strong> für Probelauf</li>
+        <li>Ausführen</li>
+      </ol>
+      <div class="callout callout-info">
+        <strong>ℹ️</strong> Alle neuen Subscriptions werden automatisch als DSUB erstellt.<br>
+        <span class="source-tag">Quelle: SAP Help – „Migrating Data Subscriptions from SUBS to DSUB"</span>`},
+{id:"s52",title:"5.2 Transport-Voraussetzungen",phase:"Phase 5 – Transport",color:"#6b7280",content:`
+        <span class="badge badge-pflicht">Pflicht (für Transport)</span>
+      
+      <table class="data">
+        <tr><th>Voraussetzung</th><th>Details</th></tr>
+        <tr><td>Typ</td><td><strong>DSUB</strong> (nicht SUBS)</td></tr>
+        <tr><td>Status</td><td><strong>A (Active)</strong> – M und A müssen gleich sein</td></tr>
+        <tr><td>Package</td><td>Nicht <code>$TMP</code></td></tr>
+        <tr><td>Transport Request</td><td>Muss zugewiesen sein</td></tr>
+      </table>
+      <span class="source-tag">Quelle: SAP Help – „Transporting Data Subscriptions"</span>`},
+{id:"s61",title:"6.1 Einzeln löschen",phase:"Phase 6 – Löschen",color:"#6b7280",content:`
+        <span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">RSDPS oder BWMT</span>
+      
+      <ul>
+        <li><strong>RSDPS:</strong> Subscription auswählen → <strong>Delete</strong> (einzeln)</li>
+        <li><strong>BWMT Data Subscriptions View:</strong> Eine oder mehrere Subscriptions auswählen → Rechtsklick → <strong>Delete</strong> (Mass-Delete möglich)</li>
+        <li>Local Table (File) wird <strong>NICHT</strong> automatisch gelöscht → muss manuell in Datasphere entfernt werden</li>
+        <li>Nach Löschen der Subscription verliert die Local Table ihr read-only-Flag</li>
+      </ul>
+      <span class="source-tag">Quelle: SAP Help – „Deleting Data Subscriptions", „Deleting Dependent Objects"</span>`},
+{id:"s62",title:"6.2 Mass Delete",phase:"Phase 6 – Löschen",color:"#6b7280",content:`
+        <span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">RSDPS / SE38</span>
+      </div>
+      <ul>
+        <li><code>SE38</code> → Report <code>RSDDS_DELETE_BY_SOURCE</code></li>
+        <li>Oder: <code>RSDPS</code> → <strong>Goto → Delete Data Subscriptions by Target</strong></li>
+        <li>Optionen: <strong>Simulate Deletion</strong> (Probelauf), <strong>Force Deletion</strong> (ignoriert Fehler)</li>
+      </ul>
+      <div class="callout callout-danger">
+        <strong>⚠️ Warnung bei Force Deletion:</strong> Wenn die Datasphere-Verbindung während der Löschung nicht funktioniert, behalten die Local Tables ggf. ihr read-only-Flag und können danach nicht mehr gelöscht werden!<br>
+        <span class="source-tag">Quelle: SAP Help – „Mass Deleting Data Subscriptions by Target"</span>`},
+{id:"happypath",title:"Happy Path",phase:null,color:"#333",content:`<h2 id="happypath">✅ Minimal-Workflow (Happy Path)</h2>
+    <ol>
+      <li>Voraussetzungen prüfen (BW 7.5 SP24+, BWPCE, Datasphere mit Object Store)</li>
+      <li>SAP Notes einspielen (<code>3593519</code>, <code>3590400</code>)</li>
+      <li>DPG konfigurieren (<code>SAP_BW_BDC_CONFIGURATION</code>)</li>
+      <li>Target anlegen (<code>RSDPS</code> → Goto → Maintain Target System)</li>
+      <li>Data Subscriptions generieren (BWMT Scenario Generator oder <code>RSDPS</code> → Create)</li>
+      <li><em>Optional:</em> Extraction Mode, Selection, Projection anpassen</li>
+      <li>Data Subscriptions <strong>aktivieren</strong> (BWMT oder <code>RSDPS</code>)</li>
+      <li>Data Subscriptions <strong>ausführen</strong> (<code>RSDPS</code> → Run)</li>
+      <li>Ergebnis prüfen (<code>RSDPS</code> → Runtime / Browse)</li>
+      <li>In Datasphere: <em>Optional:</em> Local Table an anderen Space sharen (nur für Reporting)</li>
+      <li>In Datasphere: Data Product im Data Sharing Cockpit erstellen → Status auf „Listed"</li>
+      <li><em>Optional:</em> Im BDC Cockpit: Data Product via Delta Sharing an Databricks teilen</li>
+    </ol>`},
+{id:"questions",title:"Klärungsfragen",phase:null,color:"#333",content:`<h2 id="questions">❓ Klärungsfragen</h2>
+    <ol>
+      <li><strong>Lizenzierung:</strong> Läuft das BW 7.5 als BWPCE in SAP BDC? <em>(Pflichtvoraussetzung!)</em></li>
+      <li><strong>SP-Level:</strong> Ist mindestens SP24 eingespielt?</li>
+      <li><strong>Object Store:</strong> Ist der Object Store in Datasphere bereits aktiviert?</li>
+      <li><strong>SAP Notes:</strong> Sind Notes 3593519 und 3590400 bereits eingespielt?</li>
+      <li><strong>Zertifikate:</strong> Sind SSL-Zertifikate in STRUST korrekt hinterlegt?</li>
+      <li><strong>InfoProvider:</strong> Welche sollen initial repliziert werden? (aDSOs, CompositeProvider, Queries?)</li>
+      <li><strong>Delta oder Full?</strong> Ist inkrementelle Extraktion gewünscht?</li>
+      <li><strong>Transport:</strong> Sollen Subscriptions zwischen DEV/QAS/PRD transportiert werden?</li>
+      <li><strong>Automatisierung:</strong> Soll die Extraktion per Process Chain gesteuert werden?</li>
+      <li><strong>Databricks:</strong> Ist Databricks-Integration (Delta Sharing) ein Thema?</li>
+      <li><strong>Multiple BW-Systeme:</strong> Falls mehrere BW-Systeme vorhanden sind – sollen diese in denselben oder getrennte Datasphere Spaces schreiben? (Ob mehrere BW-Systeme technisch denselben Space nutzen können, ist von SAP nicht explizit dokumentiert und sollte mit SAP geklärt werden.)</li>
+    </ol>`},
+{id:"sources",title:"Quellen-Verzeichnis",phase:null,color:"#333",content:`
+    <table>
+      <tr>
+        <td>SAP Help</td>
+        <td>„Data Product Generator for SAP Business Data Cloud" – SAP Help Portal<br>
+          <a href="https://help.sap.com/docs/SAP_BW4HANA/ed919380760a44388ab90e6bb3e7480a?locale=en-US&state=PRODUCTION&version=1.0" target="_blank">https://help.sap.com/docs/SAP_BW4HANA/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Blog 1</td>
+        <td>„BW Modernisation with the SAP BW Data Product Generator" – SAP Community<br>
+          <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/bw-modernisation-with-the-sap-bw-data-product-generator/ba-p/14336399" target="_blank">https://community.sap.com/…/bw-modernisation-with-the-sap-bw-data-product-generator/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Blog 2</td>
+        <td>„The SAP BW Data Product Generator for SAP Business Data Cloud" – SAP Community<br>
+          <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/the-sap-bw-data-product-generator-for-sap-business-data-cloud/ba-p/14072413" target="_blank">https://community.sap.com/…/the-sap-bw-data-product-generator-for-sap-business-data-cloud/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Blog 3</td>
+        <td>„BW Data Product Generator to Databricks Enterprise Capability" – SAP Community<br>
+          <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/bw-data-product-generator-to-databricks-enterprise-capability/ba-p/14251192" target="_blank">https://community.sap.com/…/bw-data-product-generator-to-databricks-enterprise-capability/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Blog 4</td>
+        <td>„Expose BW 7.5 objects as Data Products in Databricks" – SAP Community<br>
+          <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/expose-bw-7-5-objects-as-data-products-in-databricks/ba-p/14282351" target="_blank">https://community.sap.com/…/expose-bw-7-5-objects-as-data-products-in-databricks/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Blog 5</td>
+        <td>„SAP BDC - Enhance a BW Data product with SAP Databricks" – SAP Community<br>
+          <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/sap-bdc-enhance-a-bw-data-product-with-sap-databricks/ba-p/14242606" target="_blank">https://community.sap.com/…/sap-bdc-enhance-a-bw-data-product-with-sap-databricks/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Config</td>
+        <td>„Configuring the Data Product Generator for SAP Business Data Cloud" – SAP Document<br>
+          <a href="https://www.sap.com/documents/2026/02/acde4d47-3d7f-0010-bca6-c68f7e60039b.html" target="_blank">https://www.sap.com/documents/2026/02/acde4d47-…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Learning</td>
+        <td>SAP Learning Journey „Data Product Generator for SAP Business Data Cloud"<br>
+          <a href="https://learning.sap.com/courses/sap-bw-4hana-specialist/data-product-generator-for-sap-business-data-cloud" target="_blank">https://learning.sap.com/…/data-product-generator-for-sap-business-data-cloud</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Roadmap</td>
+        <td>SAP Roadmap – Data Product Generator Automation<br>
+          <a href="https://roadmaps.sap.com/board?PRODUCT=73555000100800004851&range=CURRENT-LAST#;INNO=000D3AAC9DD21FD0A4C203167B3998EE" target="_blank">https://roadmaps.sap.com/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>SAP Help 2</td>
+        <td>„Creating and Sharing Data Products" – SAP Help Portal (Data Product Generator)<br>
+          <a href="https://help.sap.com/docs/SAP_BW4HANA/ed919380760a44388ab90e6bb3e7480a?locale=en-US&state=PRODUCTION&version=1.0" target="_blank">https://help.sap.com/docs/SAP_BW4HANA/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Arch. Center</td>
+        <td>SAP Architecture Center – „Modernizing SAP BW with SAP Business Data Cloud"<br>
+          <a href="https://architecture.learning.sap.com/docs/ref-arch/f5b6b597a6/4" target="_blank">https://architecture.learning.sap.com/…</a>
+        </td>
+      </tr>
+	  <tr>
+        <td>SAP Note</td>
+        <td>3590400 - Configuration SAP BW and SAP BW/4HANA: Data Product Generator for SAP BDC<br>
+          <a href="https://me.sap.com/notes/3590400/E" target="_blank">3590400</a>
+        </td>
+      </tr>
+	  <tr>
+        <td>SAP Note</td>
+        <td>3590400 - Configuration SAP BW and SAP BW/4HANA: Data Product Generator for SAP BDC<br>
+          <a href="https://www.sap.com/documents/2026/02/acde4d47-3d7f-0010-bca6-c68f7e60039b.html" target="_blank">Configuration Guide</a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-top:0.8rem"><strong>Hinweis:</strong> SAP-Help-Quellenangaben referenzieren die Sektionsnamen der offiziellen SAP Help Dokumentation (z.B. „Creating Data Subscriptions", „RSDPS Transaction in SAP GUI"). Zusätzlich herangezogene Quellen (Web-Recherche) sind entsprechend gekennzeichnet.</p>`}
+], en: [
+{id:"bw75",title:"BW 7.5 Specifics",phase:null,color:"#333",content:`<div class="system-alert" id="bw75">
+    <table>
+      <tr><td>UI</td><td>No BW/4HANA Cockpit → use <strong>Transaction RSDPS</strong> in SAP GUI only </td></tr>
+      <tr><td>BWMT (Eclipse)</td><td>BW Modeling Tools available from <strong>BWMT 1.27</strong> (incl. Scenario Generator)</td></tr>
+      <tr><td>Minimum SP</td><td><strong>SP24 or higher</strong> required</td></tr>
+      <tr><td>Catalog-Integration</td><td><strong>Not available</strong> (erst ab BW/4HANA 2023 SP04)</td></tr>
+      <tr><td>Konfiguration</td><td>SAP Note <strong>3590400</strong> (contains installation guide + note about Support Ticket)</td></tr>
+      <tr><td>Support Case</td><td><strong>Mandatory!</strong> Open a ticket under component <strong>BDC-BW</strong> including: System ID (SID), Installation Number, Datasphere Tenant URL. Without this ticket, the pilot SAP Note cannot be released and the task list will fail with a technical error.</td></tr>
+      <tr><td>Language</td><td>DPG is <strong>only in Englisch</strong> available. Logon at BW-System must be on English, otherwise Problems may occure.</td></tr>
+      <tr><td>Installation</td><td>Via TCI through SAP Note <strong>3678407</strong> (Data Subscriptions 3.0) or <strong>3593519</strong> (Data Subscriptions 2.0)</td></tr>
+    </table>
+    <span class="source-tag">Sources: SAP Help – "Data Subscriptions"; Blog "The SAP BW DPG for SAP BDC"; Blog "Expose BW 7.5 objects as Data Products"</span>
+  </div>`},
+{id:"overview",title:"DPG Overview",phase:null,color:"#333",content:`<h2 id="overview">What is the Data Product Generator?</h2>
+    <p>The DPG enables extracting data from BW InfoProviders (aDSOs, CompositeProvider, InfoObjects, MultiProvider, InfoCubes, Queries) via the <strong>ODP-Framework</strong> in <strong>Local Tables (File)</strong> in the SAP Datasphere Object Store. These Local Tables can then be published as <strong>Data Products</strong> and shared, e.g., to SAP Databricks.</p>
+    <p style="margin-top:0.5rem"><strong>Core concept:</strong> A <em>Data Subscription</em> defines WHAT (source, fields, filters) and WHERE TO (target/space in Datasphere) to extract — it does not contain the data itself, only the extraction definition.</p>
+    <span class="source-tag">Source: SAP Help – "Data Subscription (DSUB and SUBS)"</span>`},
+{id:"toolcomp",title:"Tool Comparison",phase:null,color:"#333",content:`<h2 id="toolcomp">🔧 Administration Tool Comparison</h2>
+    <p style="margin-bottom:0.7rem">Data Subscriptions can be managed through various tools. For BW 7.5, the <strong>Transaction RSDPS</strong> (SAP GUI) and the <strong>BW Modeling Tools</strong> (Eclipse) are available. The Data Subscriptions App in the BW/4HANA Cockpit is only available from BW/4HANA and is listed here for completeness.</p>
+    <table class="data">
+      <tr>
+        <th>Action</th>
+        <th>RSDPS<br><span style="font-weight:400;font-size:0.75rem">SAP GUI</span></th>
+        <th>BWMT Data Subscriptions<br><span style="font-weight:400;font-size:0.75rem">Eclipse</span></th>
+        <th>BWMT Scenario Generator<br><span style="font-weight:400;font-size:0.75rem">Eclipse</span></th>
+        <th class="col-disabled">Data Subscriptions App<br><span style="font-weight:400;font-size:0.75rem">BW/4HANA Cockpit<br>⛔ not for BW 7.5</span></th>
+      </tr>
+      <tr><td><strong>Create</strong></td><td>✅</td><td>❌</td><td>✅ Mass-Generate</td><td class="col-disabled">✅</td></tr>
+      <tr><td><strong>Create from Template</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">✅</td></tr>
+      <tr><td><strong>Edit</strong> (Extraction Mode, Selection, Projection, Scheduling)</td><td>✅</td><td>❌</td><td>⚠️ Before Generate only</td><td class="col-disabled">✅</td></tr>
+      <tr><td><strong>Activate / Deactivate</strong></td><td>✅ (single)</td><td>✅ (incl. mass)</td><td>✅ (during Generate)</td><td class="col-disabled">✅ (single)</td></tr>
+      <tr><td><strong>Run</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">✅</td></tr>
+      <tr><td><strong>Delete</strong></td><td>✅ (single)</td><td>✅ (incl. mass)</td><td>✅ (incl. mass)</td><td class="col-disabled">✅ (single)</td></tr>
+      <tr><td><strong>Check</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">❌</td></tr>
+      <tr><td><strong>Runtime / Browse</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">✅ (View Executions)</td></tr>
+      <tr><td><strong>Reset Delta</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">❌</td></tr>
+      <tr><td><strong>Data Preview</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">❌</td></tr>
+      <tr><td><strong>Mass Delete by Target</strong></td><td>✅ (via Report)</td><td>❌</td><td>❌</td><td class="col-disabled">❌</td></tr>
+      <tr><td><strong>Maintain Target System</strong></td><td>✅</td><td>❌</td><td>❌</td><td class="col-disabled">❌</td></tr>
+      <tr><td><strong>View Local Table (File)</strong></td><td>✅</td><td>✅ (CTRL+Click)</td><td>❌</td><td class="col-disabled">✅</td></tr>
+    </table>
+    <div class="callout callout-warn" style="margin-top:0.8rem">
+      <strong>⚠️ Summary for BW 7.5:</strong> For editing existing subscriptions (Edit) and for <strong>Execute (Run)</strong> requires <strong>Transaction <code>RSDPS</code></strong> . BWMT additionally offers mass operations (Activate, Delete) and the <strong>Scenario Generator</strong> for initial generation of complex models.
+    </div>
+    <span class="source-tag">Source: SAP Help – "RSDPS Transaction in SAP GUI only only", "BW Data Product Generator Perspective in BW Modeling Tools (BWMT)", "Data Subscriptions App in SAP BW/4HANA Cockpit"; own consolidation</span>`},
+{id:"s01",title:"0.1 Check System Landscape",phase:"Phase 0 – Prerequisites",color:"#e76500",content:`<span class="badge badge-pflicht">Required</span>
+      </div>
+      <div class="step-goal">Goal: Ensure that the technical foandation is in place.</div>
+      <ul>
+        <li>SAP BW 7.5 with <strong>at least SP24</strong></li>
+        <li>The BW system must be operated as <strong>SAP Business Warehouse, private cloud edition (BWPCE)</strong> in SAP Business Data Cloud be operated</li>
+        <li>SAP Datasphere with <strong>activated Object Store</strong> must be available</li>
+        <li>Connectivity between BW and Datasphere must be established</li>
+      </ul>
+      
+      <div class="callout callout-warn">
+        <strong>⚠️ Language Restriction:</strong> Der Data Product Generator and alle TCIs sind <strong>ausschließlich in Englisch</strong> available. Die Anmeldung at BW-System must on Englisch erfolgen (<code>Language = EN</code>). Logging on in any other language may result in unexpected errors and malfunctioning behavior.<br>
+        <span class="source-tag">Source: SAP Note 3590400 – "Configuring the Data Product Generator", Section "Install the Main TCI"</span>
+      </div>
+      <div class="callout callout-danger">
+        <strong>⚠️ License Restriction:</strong> The DPG is only licensed for BW systems operated as BWPCE in SAP Private Cloud – <strong>not</strong> for standalone on-premise installations.<br>
+        <span class="source-tag">Source: Blog "The SAP BW DPG for SAP BDC"</span>
+      </div>
+      <div class="callout callout-info">
+        <strong>ℹ️ Open Point:</strong> Whether exceptions exist for on-premise could not be confirmed. The blog "BW DPG to Databricks" mentions: <em>"speak to your SAP team for potential options"</em>. <strong>Please clarify internally with SAP.</strong>`},
+{id:"s02",title:"0.2 Implement SAP Notes",phase:"Phase 0 – Prerequisites",color:"#e76500",content:`<span class="badge badge-pflicht">Required</span>
+      </div>
+      <div class="step-goal">Goal: Install the DPG code in the BW system.</div>
+      <p><strong>Relevant SAP Notes:</strong></p>
+      <table class="data">
+        <tr><th>Note</th><th>Content</th></tr>
+        <tr><td><code>3590400</code></td><td>Configuration guide for the DPG (first step: contains installation guide and note about creating an SAP ticket)</td></tr>
+        <tr><td><code>3678407</code></td><td>TCI for Data Subscriptions 3.0 – latest version of the DPG code</td></tr>
+        <tr><td><code>3593519</code></td><td>TCI for Data Subscriptions 2.0 – older version (only relevant if 3678407 is not applicable)</td></tr>
+        <tr><td><code>3590318</code></td><td>Pilot BW Configuration – released after support case (mandatory)</td></tr>
+        <tr><td><code>3581186</code></td><td>OA2C: RFC API (mandatory)</td></tr>
+        <tr><td><code>3089413</code></td><td>CVE-2023-0014: Capture-replay vulnerability in SAP NetWeaver AS (mandatory)</td></tr>
+        <tr><td><code>3224161</code></td><td>Prerequisite for Note 3089413 (mandatory)</td></tr>
+        <tr><td><code>3600085</code></td><td>Note Analyzer for UI5 Corrections (BW/4HANA 2021/2023 only)</td></tr>
+      </table>
+      <ol>
+        <li>Read SAP Note 3590400 as entry point – contains the complete installation guide and the note about creating an SAP ticket</li>
+        <li>Check SAP Note 3678407 (Data Subscriptions 3.0) via the <strong>Note Analyzer</strong> and implement all corrections. If not applicable: use SAP Note 3593519 (Data Subscriptions 2.0)</li>
+        <li>Note Analyzer for Data Product Generator → all checks must be green</li>
+      </ol>
+      <div class="callout callout-warn">
+        <strong>⚠️ Warning – Certificates:</strong> SSL certificates must be correctly maintained in <code>STRUST</code> for the connection to Datasphere to work.<br>
+        <span class="source-tag">Source: Blog "BW DPG to Databricks"</span>`},
+{id:"s03",title:"0.3 DPG Configuration",phase:"Phase 0 – Prerequisites",color:"#e76500",content:`<span class="badge badge-pflicht">Required</span>
+      </div>
+      <div class="step-goal">Goal: Establish the connection between BW and SAP Datasphere, create the BW File Space.</div>
+      <ol>
+        <li>Configuration task <code>SAP_BW_BDC_CONFIGURATION</code> execute (details in SAP Note 3590400)</li>
+        <li>This creates an initial <strong>BW File Space</strong> in Datasphere (type: HDLFS)</li>
+        <li>Via <code>RSDPS</code> → <strong>Goto → Maintain Target System</strong> can <strong>additional targets</strong> be configured pointing to different spaces. The desired target space is selected when creating a subscription.</li>
+      </ol>
+      <div class="callout callout-info">
+        <strong>ℹ️ Multiple Targets:</strong> The DPG now supports <strong>multiple Datasphere targets and spaces</strong> per BW system, allowing data separation e.g. by business domain. The configuration task is also <strong>repeatable</strong>.<br>
+        <span class="source-tag">Source: SAP Architecture Center – "Modernizing SAP BW with SAP BDC" (Feature: "Supporting multiple SAP Datasphere targets and spaces"); Blog "BW DPG to Databricks"</span>
+      </div>
+      <div class="callout callout-warn">
+        <strong>⚠️ BW File Space is read-only:</strong> No custom objects can be created (exception: Task Chains). Data management (e.g. deleting data) is possible. Local Tables can be shared to other spaces via Sharing.<br>
+        <span class="source-tag">Source: SAP Help – "Creating Data Subscriptions"</span>`},
+{id:"s04",title:"0.4 Configure Target(s)",phase:"Phase 0 – Prerequisites",color:"#e76500",content:`<span class="badge badge-pflicht">Required</span>
+        <span class="badge badge-tool">RSDPS</span>
+      </div>
+      <div class="step-goal">Goal: Create at least one target that can be selected for Data Subscriptions.
+      <ol>
+        <li>Transaction <code>RSDPS</code> → Menu <strong>Goto → Maintain Target System</strong></li>
+        <li>Create target (points to BW File Space / Datasphere Tenant)</li>
+        <li>Target Type is automatically set to <strong>HDLFS</strong> set</li>
+        <li>Optional: Mark a target as <strong>Preferred Target</strong> mark</li>
+      </ol>
+      <span class="source-tag">Source: SAP Help – "RSDPS Transaction in SAP GUI only only", "Configuring Targets for the Data Product Generator"</span>`},
+{id:"s05",title:"0.5 Datasphere Authorizations",phase:"Phase 0 – Prerequisites",color:"#e76500",content:`<span class="badge badge-pflicht">Required</span>
+      </div>
+      <div class="step-goal">Goal: Ensure that users in Datasphere have the required roles.
+      <p><strong>Required Scoped Roles (at least one):</strong></p>
+      <ul>
+        <li><strong>DW Space Administrator</strong> – Benutzerverwaltung &amp; Monitoring</li>
+        <li><strong>DW Integrator</strong> – Monitoring data integration in the space</li>
+        <li><strong>DW Modeler</strong> – Share local tables to other spaces</li>
+      </ul>
+      <span class="source-tag">Source: Blog "Expose BW 7.5 objects as Data Products in Databricks"</span>`},
+{id:"s06",title:"0.6 BW Authorizations",phase:"Phase 0 – Prerequisites",color:"#e76500",content:`
+	  <span class="badge badge-pflicht">Required</span>
+	  <div class="step-goal">Goal: Ensure that the required authorizations are assigned in the BW system.</div>
+      <p><strong>For connectivity setup:</strong></p>
+      <ul>
+        <li>Authorization Object <strong><code>S_RS_DDSTG</code></strong> for the dialog user</li>
+      </ul>
+      <p style="margin-top:0.7rem"><strong>For creating Data Subscriptions:</strong></p>
+      <ul>
+        <li>Authorization Object <strong><code>S_RS_DDS</code></strong> for the dialog user</li>
+      </ul>
+      <p style="margin-top:0.7rem"><strong>For backgroand runs (Process Chains):</strong></p>
+      <ul>
+        <li>Authorization Object <strong><code>S_RS_DDS</code></strong> for the BW backgroand user (e.g. BWREMOTE)</li>
+      </ul>
+      <p style="margin-top:0.7rem"><strong>For OAuth configuration (STRUST, SOAUTH2_CLIENT):</strong></p>
+      <table class="data">
+        <tr><th>Authorization Object</th><th>Attributee</th><th>Value</th></tr>
+        <tr><td><code>S_OA2C_ADM</code></td><td>ACTVT</td><td>01, 02, 03, 06</td></tr>
+        <tr><td><code>S_SEC_COMM</code></td><td>ACTVT</td><td>03</td></tr>
+        <tr><td><code>S_OA2C_USE</code></td><td>OA2C_PROF</td><td>BW4_DWC</td></tr>
+        <tr><td></td><td>ACTVT</td><td>16</td></tr>
+        <tr><td><code>S_PSE_ADM</code></td><td>ACTVT</td><td>01</td></tr>
+      </table>
+      <div class="callout callout-info">
+        <strong>ℹ️ BW/4HANA only:</strong> Additionally assign the role <strong><code>SAP_BW4_MODELER_FOR_BDC</code></strong> .
+      </div>
+      <span class="source-tag">Source: SAP Note 3590400 – "Configuring the Data Product Generator", Section "Authorizations in SAP BW or SAP BW/4HANA"</span>`},
+{id:"s11",title:"1.1 Scenario Generator (BWMT)",phase:"Phase 1 – Subscriptions",color:"#0070f2",content:`<span class="badge badge-empfohlen">Recommended</span>
+        <span class="badge badge-tool">BWMT / Eclipse</span>
+      </div>
+      <div class="step-goal">Goal: Map an entire BW model including all dependencies (e.g. InfoObjects of a CompositeProvider) as subscriptions and generate them in one step.</div>
+      <p><strong>Prerequisite:</strong> BWMT Version <strong>1.27</strong> (for the BW Data Product Generator Perspective: <strong>1.27.1</strong>)</p>
+      <p><strong>Concept:</strong> Ein <em>Scenario</em> = list of references between Data Subscriptions needed to fully represent a BW model. The <em>Scenario Tree</em> stores dependencies and considers existing subscriptions (no duplicates).</p>
+      <p><strong>Procedure:</strong></p>
+      <ol>
+        <li>Eclipse: <strong>Window → Show View → Business Warehouse → Scenario Generator (Data Subscriptions)</strong></li>
+        <li>Tab <strong>Scenario Core Objects</strong>: Add BW objects (aDSOs, CompositeProvider, etc.)</li>
+        <li><strong>Collection Grouping</strong> select (recommendation: "Only Necessary Objects")</li>
+        <li><strong>Association Levels</strong> set (default: 4)</li>
+        <li><strong>Target</strong> select (mandatory) and optionally <strong>Process Chain Variant</strong></li>
+        <li>Set further options (e.g. "Use Existing Data Subscriptions", "Consider Transport Configuration")</li>
+        <li><strong>Collect</strong> click → Scenario Tree is built</li>
+        <li>Tab <strong>Object Relations → Selection to Generate Data Subscriptions</strong>: Review and individually adjust subscriptions (Description, Extraction Mode, Selections, Projections, Package)</li>
+        <li><strong>Mode</strong> select (recommended: "Activate in Backgroand")</li>
+        <li><strong>Generate</strong> click → all subscriptions are created at once</li>
+        <li>Review results in the <strong>Messages</strong> tab</li>
+      </ol>
+
+      <div class="callout callout-warn">
+        <strong>⚠️ Warning – Same Target:</strong> All subscriptions in a scenario must have <strong>the same target</strong> !
+      </div>
+	  <div class="callout callout-warn">
+        <strong>⚠️ Activation Mode:</strong> "Activate Directly" consumes significant processing power → prefer <strong>"Activate in Backgroand"</strong> select.<br>
+        <span class="source-tag">Source: SAP Help – "Generating Data Subscriptions"</span>
+      </div>
+	  <div class="callout callout-warn">
+        <strong>⚠️ Important – Run not possible in BWMT:</strong> After generating, subscriptions must be executed via <strong>Transaction <code>RSDPS</code></strong> (see Phase 2). Execution (Run) is not available in BWMT.<br>
+        <span class="source-tag">Source: SAP Help – "Generating Data Subscriptions", "BW Data Product Generator Perspective in BW Modeling Tools (BWMT)"</span>
+	  </div>
+	  <div class="callout callout-info">
+        <strong>ℹ️ Advantages over RSDPS:</strong> Mass generation of all subscriptions including dependencies, mass activation, package assignments for all subscriptions at once, reuse of existing subscriptions.
+      </div>
+      <div class="callout callout-info">
+        <strong>ℹ️ Performance Optimization:</strong> For large data volumes, the following RSADMIN parameters can be adjusted via report <code>SAP_RSADMIN_MAINTAIN</code> (SE38) :<br>
+        • <code>RSDDS_PACKSIZE_CSV</code> – Package size (default: 50 MB)<br>
+        • <code>RSDDS_PARALLEL_LOAD = X</code> – Enable parallel processing (enabled by default from DPG 3.0)<br>
+        Data Subscription runs are processed via the Queued Task Manager (QTM), which uses up to 75% of available batch work processes (configurable, see SAP Note 3675751).<br>
+        <span class="source-tag">Source: SAP Note 3590400 – "Optimizing Data Subscription Performance"</span>
+      </div>      
+	  `},
+{id:"s12",title:"1.2 Optional Settings",phase:"Phase 1 – Subscriptions",color:"#0070f2",content:`<span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">BWMT (before Generate) or RSDPS</span>   
+      <div class="step-goal">Goal: Fine-tune the extraction (fields, filters, delta, scheduling).</div>
+      <p>These settings can be made <strong>before generating</strong> in the Scenario Generator (Step 1.1, Point 8) or <strong>after creation</strong> in edit mode of Transaction <code>RSDPS</code> :</p>
+      <table class="data">
+        <tr><th>Setting</th><th>Description</th><th>Note</th></tr>
+        <tr><td><strong>Extraction Mode</strong></td><td><code>Full</code> or <code>Delta</code></td><td>Delta = incremental extraction</td></tr>
+        <tr><td><strong>Scheduling</strong></td><td><code>No Scheduling</code> (manuell) or <code>Process Chain</code></td><td>For Process Chain: specify variant</td></tr>
+        <tr><td><strong>Selections</strong></td><td>Restrict dataset (filter on fields)</td><td>Reduces data volume</td></tr>
+        <tr><td><strong>Projections</strong></td><td>Select/deselect fields</td><td>Key fields are always mandatory</td></tr>
+      </table>
+
+      <div class="callout callout-danger">
+        <strong>⚠️ Critical Time Window for Changes:</strong><br>
+        <strong>Before first run:</strong> Description, Extraction Mode, Scheduling, Selection, Projection can be changed.<br>
+        <strong>After first run:</strong> Only <strong>Description</strong> remains editable – everything else becomes <strong>read-only</strong>!<br>
+        Subsequent changes are <strong>only possible via <code>RSDPS</code></strong> (not in the BWMT Data Subscriptions View).<br>
+        <span class="source-tag">Source: SAP Help – "Editing Data Subscriptions"</span>
+      </div>
+
+      <div class="callout callout-warn">
+        <strong>⚠️ Process Chain Type:</strong> Must be: <strong>Load Process and Postprocessing → Data Provisioning Subscription</strong>.<br>
+        <span class="source-tag">Source: SAP Help – "Creating Data Subscriptions in the SAP GUI"</span>`},
+{id:"s13",title:"1.3 Manual Creation in RSDPS",phase:"Phase 1 – Subscriptions",color:"#0070f2",content:`<span class="badge badge-optional">Alternative to 1.1</span>
+        <span class="badge badge-tool">RSDPS</span>
+      </div>
+      <div class="step-goal">Goal: Create a single extraction definition for a BW InfoProvider – without the Scenario Generator.</div>
+      <p><strong>Procedure in <code>RSDPS</code> (SAP GUI):</strong></p>
+      <ol>
+        <li>Transaction <code>RSDPS</code> open</li>
+        <li>Button <strong>Create</strong> click</li>
+        <li><strong>Source Name:</strong> BW InfoProvider select (aDSO, CompositeProvider, InfoObject, MultiProvider, InfoCube or Query) – Source Type is automatically set to <strong>ODP</strong> set</li>
+        <li><strong>Target Name:</strong> The configured target select – Target Type is automatically set to <strong>HDLFS</strong> set</li>
+        <li><strong>Save</strong> click</li>
+        <li><strong>Package</strong> select</li>
+      </ol>
+      <div class="callout callout-danger">
+        <strong>⚠️ Package Warning:</strong> By default, <code>$TMP</code> is assigned (= local, <strong>not transportable</strong>). For productive scenarios, always choose a transportable package!<br>
+        <span class="source-tag">Source: SAP Help – "Creating Data Subscriptions in the SAP GUI"</span>
+      
+      <p><strong>What is automatically generated:</strong></p>
+      <ul>
+        <li>Technical name (cannot be changed)</li>
+        <li>Description (based on InfoProvider, can be changed)</li>
+        <li>Timestamp, creator, owner</li>
+        <li>Target information: Technical name of Local Table, File Path, CSV properties</li>
+      </ul>
+      <span class="source-tag">Source: SAP Help – "Creating Data Subscriptions in the SAP GUI"</span>`},
+{id:"s14",title:"1.4 Create from Template",phase:"Phase 1 – Subscriptions",color:"#0070f2",content:`<span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">RSDPS</span>
+      </div>
+      <div class="step-goal">Goal: Faster creation by copying an existing subscription.</div>
+      <ol>
+        <li>Select existing subscription in the RSDPS list</li>
+        <li><strong>Create from Template</strong> click</li>
+        <li>Optional: Adjust Source, Target, Extraction Mode, Scheduling</li>
+        <li>Save</li>
+      </ol>
+      <div class="callout callout-info">
+        <strong>ℹ️</strong> Even if the template is of type SUBS, the new subscription will automatically be created as <strong>DSUB</strong> (= transportable).<br>
+        <span class="source-tag">Source: SAP Help – "Creating Data Subscriptions from Template"</span>`},
+{id:"s21",title:"2.1 Activate",phase:"Phase 2 – Activate & Execute",color:"#188918",content:`<span class="badge badge-pflicht">Required</span>
+        <span class="badge badge-tool">BWMT or RSDPS</span>
+      </div>
+      <div class="step-goal">Goal: Make the subscription executable and create the Local Table (File) in Datasphere.</div>
+
+      <p><strong>Option A – Via BWMT (recommended for multiple subscriptions):</strong></p>
+      <ul>
+        <li>In the <strong>Data Subscriptions View</strong>: Select one or more subscriptions (via <code>CTRL + Click</code>)</li>
+        <li>Right-click → <strong>Activate</strong></li>
+        <li>Advantage: <strong>Mass-Aktivierung</strong> of multiple subscriptions at once is possible</li>
+      </ul>
+
+      <p style="margin-top:0.7rem"><strong>Option B – Via RSDPS:</strong></p>
+      <ul>
+        <li>Select Data Subscription → <strong>Edit</strong> → <strong>Activate Data Subscription</strong></li>
+      </ul>
+
+      <p style="margin-top:0.7rem"><strong>What happens during activation:</strong></p>
+      <ul>
+        <li>Status changes from <strong>Inactive → Active</strong></li>
+        <li>SAP Datasphere entity is <strong>asynchronouslyously</strong> created and deployed</li>
+        <li><strong>Local Table (File)</strong> is created with the subscription ID as qualified name</li>
+        <li>Semantics Usage Type: <strong>Local Table (Fact)</strong></li>
+      </ul>
+      <div class="callout callout-info">
+        <strong>ℹ️ Versions:</strong> Data Subscriptions have an <strong>M (Modified)</strong> and <strong>A (Active)</strong> version. After changes, reactivation is required so A = M. Transport is only possible when A = M.<br>
+        <span class="source-tag">Source: SAP Help – "Transporting and Migrating Data Subscriptions"</span>
+      </div>
+      <div class="callout callout-info">
+        <strong>ℹ️ Roadmap – Local Table Technical Name:</strong> Currently, the technical name of the Local Table in Datasphere is automatically generated from the subscription ID and cannot be customized. According to the SAP Roadmap, the ability to set the technical name during creation is planned.<br>
+        🔗 <a href="https://roadmaps.sap.com/board?PRODUCT=73555000100800004851&range=CURRENT-LAST#;INNO=000D3AA914A11FD0AFC333763940D81F" target="_blank" style="color:var(--sap-blue)">View SAP Roadmap Item</a>`},
+{id:"s22",title:"2.2 Execute",phase:"Phase 2 – Activate & Execute",color:"#188918",content:`<span class="badge badge-pflicht">Required</span>
+        <span class="badge badge-tool">RSDPS (manual) or Process Chain (scheduled)</span>
+      </div>
+      <div class="step-goal">Goal: Perform the actual data extraction.
+
+      <p><strong>Option A – Manual via RSDPS:</strong></p>
+      <ol>
+        <li>Transaction <code>RSDPS</code> open</li>
+        <li>Data Subscription in the list select</li>
+        <li><strong>Run</strong> click</li>
+      </ol>
+
+      <p style="margin-top:0.7rem"><strong>Option B – Automatic via Process Chain:</strong></p>
+      <ul>
+        <li>If the subscription is configured with scheduling "Process Chain" the extraction is triggered <strong>via the process chain</strong> (e.g. time-scheduled or after a preceding load step)</li>
+        <li>Process chain configuration is done via <code>RSA1</code> or <code>RSPC1</code> (see Phase 3)</li>
+      </ul>
+
+      <p style="margin-top:0.7rem"><strong>Result:</strong> Data is extracted from the BW InfoProvider into the Local Table (File). In delta mode, only changed data is extracted.</p>
+      <span class="source-tag">Source: SAP Help – "RSDPS Transaction in SAP GUI only only" → Section "Actions for Data Subscriptions"</span>`},
+{id:"s23",title:"2.3 Verify Results",phase:"Phase 2 – Activate & Execute",color:"#188918",content:`<span class="badge badge-empfohlen">Recommended</span>
+        <span class="badge badge-tool">RSDPS + optionally RSA1</span>
+      </div>
+      <div class="step-goal">Goal: Verify the success of the extraction.</div>
+
+      <p><strong>In RSDPS (for manual and scheduled runs):</strong></p>
+      <ul>
+        <li>The <strong>Last Run</strong> column in the subscription list shows the status of the last run – regardless of whether triggered manually or via chain</li>
+        <li><strong>Runtime</strong> click → Detailed information about the last run</li>
+        <li><strong>Browse</strong> click → View data in the Local Table (File)</li>
+        <li><strong>Check</strong> click → Identify potential issues (Source, Target, Connection, Local Table)</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <strong>ℹ️ For scheduled runs (Process Chain):</strong> For the detailed log (duration, error messages, individual steps), it is additionally recommended to check the <strong>Process Chain Log</strong> in <code>RSA1</code> → Monitoring or in the Process Chain Editor of the BW/4HANA Cockpit.<br>
+      
+      <table class="data">
+        <tr><th>Status</th><th>Bedeutung</th></tr>
+        <tr><td>🟢 Last Run Successful</td><td>Extraction successful</td></tr>
+        <tr><td>🔴 Last Run Failed</td><td>Extraction failed</td></tr>
+        <tr><td>⚪ Not Run</td><td>Not yet executed</td></tr>
+      </table>
+      <span class="source-tag">Source: SAP Help – "RSDPS Transaction in SAP GUI only only" → Section "Columns and Values"</span>`},
+{id:"s31",title:"3.1 Process Chain",phase:"Phase 3 – Automation",color:"#7c6bbf",content:`<span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">RSDPS + RSA1/RSPC1</span>
+      </div>
+      <div class="step-goal">Goal: Execute extraction automatically on a scheduled basis.</div>
+      <ol>
+        <li>In <code>RSA1</code> or <code>RSPC1</code>: <strong>Create a new Process Chain</strong> or add a new step to an <strong>existing Process Chain</strong></li>
+        <li>Process Type: <strong>Load Process and Postprocessing → Data Provisioning Subscription</strong></li>
+        <li>New <strong>Process Variant</strong> (initially empty, without subscriptions)</li>
+        <li>In <code>RSDPS</code>: Edit subscription → Set scheduling to "Process Chain" → Variant zuweisen</li>
+        <li>Activate the subscription</li>
+        <li>In RSA1: Verify variant → Subscription should now appear</li>
+        <li>Execute the Process Chain</li>
+      </ol>
+      <div class="callout callout-warn">
+        <strong>⚠️ Warning – Empty Variant:</strong> The Process Variant is initially created <strong>empty</strong> . Subscriptions are linked to the variant through assignment <em>within the subscription itself</em> – not the other way aroand!<br>
+      <span class="source-tag">Source: SAP Help – "Scheduling Data Subscriptions With Process Chains"</span>
+	  </div>  
+	  <div class="callout callout-info">
+        <strong>ℹ️ Existing Chains:</strong> The DPG step does not necessarily need to be in a new Process Chain. It can be integrated as an <strong>additional step in an existing load chain</strong> – e.g. directly after loading data into the InfoProvider, to automatically trigger the extraction to the Object Store.<br>
+      <span class="source-tag">Source: SAP Help – "Scheduling Data Subscriptions With Process Chains"</span>
+	  </div>
+	  
+      <div class="callout callout-info">
+        <strong>ℹ️ Technical User recommended:</strong> For Process Chains and transports, SAP recommends switching the OAuth configuration to a <strong>Technical User</strong> in Datasphere (instead of Interactive Usage). This simplifies authentication and is a prerequisite for backgroand runs. For details see SAP Note 3590400, chapter "Switching the OAuth Configuration to a Technical User".<br>
+        <span class="source-tag">Source: SAP Note 3590400 – "Configuring the Data Product Generator"</span>
+      </div>    
+      `},
+{id:"s32",title:"3.2 Task Chains (DSP)",phase:"Phase 3 – Automation",color:"#7c6bbf",content:`<span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">RSDPS + Datasphere</span>
+      </div>
+      <div class="step-goal">Goal: End-to-end automation BW ↔ Datasphere (e.g. Merge Task after extraction).</div>
+      <ol>
+        <li>In Datasphere: Create Task Chain (also possible in the BW File Space)</li>
+        <li>In BW: Create/edit Process Chain and add a new step</li>
+        <li>Process Type: <strong>General Services → Task Chain</strong></li>
+        <li>Specify Target, Space, and Task Chain</li>
+        <li>Save, Activate, Execute</li>
+      </ol>
+      <div class="callout callout-warn">
+        <strong>⚠️ Prerequisite:</strong> Integrating Task Chains into Process Chains only makes sense if the associated Data Subscription is <strong>scheduled (Scheduling = Process Chain)</strong> – not set to manual execution. Otherwise, the Task Chain will never be triggered automatically.<br>
+        <span class="source-tag">Source: SAP Help – "Running Task Chains in Process Chains"</span>
+      
+      <span class="source-tag">Source: SAP Help – "Running Task Chains in Process Chains"</span>`},
+{id:"s41",title:"4.1 Share Local Table",phase:"Phase 4 – Data Products",color:"#cc1919",content:`<span class="badge badge-optional">Optional – for reporting/modeling only</span>
+      </div>
+      <div class="step-goal">Goal: Make extracted data available for modeling and reporting in Datasphere. Not required if the sole goal is sharing as a Data Product via Delta Sharing.</div>
+      <ul>
+        <li>Local Table is stored in the <strong>BW File Space</strong> (read-only, Object Store / HDLFS)</li>
+        <li>Per <strong>Sharing</strong> share to other spaces → use there for HANA-based modeling</li>
+        <li>Structure of the Local Table cannot be changed as long as the subscription exists</li>
+      </ul>
+      <div class="callout callout-info">
+        <strong>ℹ️ When is this step necessary?</strong> Only when the BW data needs to be used in Datasphere for analytical models, views, or SAC stories. For the pure <strong>Data-Product-/Delta-Sharing-Pfad</strong> (Steps 4.2 + 4.3), the Data Product can be created directly from the BW File Space – sharing to another space is not required.
+      
+      <span class="source-tag">Source: SAP Help – "Creating Data Subscriptions"</span>`},
+{id:"s42",title:"4.2 Create Data Product",phase:"Phase 4 – Data Products",color:"#cc1919",content:`<span class="badge badge-pflicht">Required (for Data Product scenario)</span>
+      </div>
+      <div class="step-goal">Goal: Create a custom Data Product from the Local Table in the BW File Space and list it in the Catalog.</div>
+      <p><strong>Prerequisite:</strong> A <strong>Formations Profile</strong> must be created in the Data Sharing Cockpit (Visibility: "Formations"). See SAP Help – "Creating Custom Delta Share Data Products - Creating Formations Profile".</p>
+      <p><strong>Procedure in SAP Datasphere:</strong></p>
+      <ol>
+        <li><strong>Data Sharing Cockpit → My Data Products</strong> open</li>
+        <li><strong>Create Product</strong> click</li>
+        <li><strong>Business Name</strong> enter (e.g. "Sales Orders") – Technical Name is auto-generated</li>
+        <li>In section <strong>Overview</strong>: Enter description</li>
+        <li>In section <strong>Product Details</strong>: <strong>Data Category</strong> select (e.g. "Company Data") – Fields Contexts, Delivery Mode and Contract Type be automatisch set (Formations / Delta Share / Free)</li>
+        <li>In section <strong>Product Artifacts</strong>: Select the <strong>BW File Space</strong> as Product Artifact Space</li>
+        <li>Click the <strong>Plus-Icon</strong> to add the desired <strong>Local Table (File)</strong> and confirm</li>
+        <li><strong>Save Changes</strong> click</li>
+        <li><strong>Switch Status → List</strong> to list the Data Product in the Catalog</li>
+      </ol>
+      <div class="callout callout-info">
+        <strong>ℹ️</strong> This step takes place entirely in <strong>SAP Datasphere</strong> . The Data Product is a <strong>Custom Data Product</strong>, maintained by your own organization (not by SAP). After listing, it appears in the Catalog in Datasphere and the BDC Cockpit.<br>
+        <span class="source-tag">Source: SAP Help – "Creating Data Products (Data Sharing Cockpit)"</span>
+      </div>
+      <div class="callout callout-warn">
+        <strong>⚠️ Synchronization:</strong> It may take some time for the Data Product to appear in the Catalog, as systems need to synchronize first. If needed, the Catalog administrator can trigger a manual synchronization.<br>
+        <span class="source-tag">Source: SAP Help – "Creating Data Products (Data Sharing Cockpit)"</span>
+      </div>
+      <div class="callout callout-info">
+        <strong>ℹ️ Roadmap – Automation Planned:</strong> According to the SAP Roadmap, automating the manual Data Product creation from the Local Table is planned. This step will become obsolete in the future.<br>
+        🔗 <a href="https://roadmaps.sap.com/board?PRODUCT=73555000100800004851&range=CURRENT-LAST#;INNO=000D3AAC9DD21FD0A4C203167B3998EE" target="_blank" style="color:var(--sap-blue)">View SAP Roadmap Item</a>`},
+{id:"s43",title:"4.3 BDC Connect (Delta Share)",phase:"Phase 4 – Data Products",color:"#cc1919",content:`<span class="badge badge-optional">Optional</span>
+      </div>
+      <div class="step-goal">Goal: Share the listed BW Data Product to Databricks/Snowfalke/MS-Fabrics(Q3-2026)/Google BigQuery(Q4-2026 – for AI/ML and advanced analytics scenarios.</div>
+      <p><strong>Prerequisite:</strong> External tool must be connected in SAP BDC Connect.</p>
+      <p><strong>Procedure in SAP Business Data Cloud Cockpit:</strong></p>
+      <ol>
+        <li><strong>Catalog &amp; Marketplace → Search</strong> open</li>
+        <li>Search for the created BW Data Product and open the details page</li>
+        <li><strong>Share</strong> click → <strong>Manage Access</strong> dialog opens</li>
+        <li><strong>Target System:</strong> Select the External tool</li>
+        <li><strong>Share Name</strong> enter (lowercase only, cannot be changed afterwards)</li>
+        <li><strong>Workspace</strong> in external tool select (one or more)</li>
+        <li><strong>Share</strong> click</li>
+      </ol>
+      <p style="margin-top:0.7rem"><strong>Result:</strong> The Data Product is available in the external Tool (Databricks:<strong>Delta Table in Unity Catalog</strong> (folder: Delta Share Received)). From there, notebooks can be created for Data Preparation, Training, Forecasting, etc. Results can be shared back as a Data Product to the BDC Catalog.</p>
+      <div class="callout callout-info">
+        <strong>ℹ️ Zero-Copy Sharing:</strong> Delta Sharing shares data live across platforms, clouds, and regions – without copying or moving the data.<br>
+        <span class="source-tag">Source: SAP Help – "Sharing Data Products to SAP Databricks"</span>`},
+{id:"s51",title:"5.1 SUBS to DSUB",phase:"Phase 5 – Transport",color:"#6b7280",content:`<span class="badge badge-optional">Optional (if legacy subscriptions exist)</span>
+        <span class="badge badge-tool">RSDPS / SE38</span>
+      </div>
+      <div class="step-goal">Goal: Make existing local subscriptions transportable.</div>
+      <ol>
+        <li><code>SE38</code> → Report <code>RSDDS_DSUB_MIGRATION</code> execute</li>
+        <li>Select subscriptions to migrate</li>
+        <li>Specify Transport Request and Package</li>
+        <li>Optional: <strong>Enable Simulation</strong> for dry run</li>
+        <li>Execute</li>
+      </ol>
+      <div class="callout callout-info">
+        <strong>ℹ️</strong> All new subscriptions are automatically created as DSUB.<br>
+        <span class="source-tag">Source: SAP Help – "Migrating Data Subscriptions from SUBS to DSUB"</span>`},
+{id:"s52",title:"5.2 Transport Prerequisites",phase:"Phase 5 – Transport",color:"#6b7280",content:`<span class="badge badge-pflicht">Required (for transport)</span>
+      
+      <table class="data">
+        <tr><th>Voraussetzung</th><th>Details</th></tr>
+        <tr><td>Typ</td><td><strong>DSUB</strong> (not SUBS)</td></tr>
+        <tr><td>Status</td><td><strong>A (Active)</strong> – M and A must be equal</td></tr>
+        <tr><td>Package</td><td>Not <code>$TMP</code></td></tr>
+        <tr><td>Transport Request</td><td>Must be assigned</td></tr>
+      </table>
+      <span class="source-tag">Source: SAP Help – "Transporting Data Subscriptions"</span>`},
+{id:"s61",title:"6.1 Delete Individual",phase:"Phase 6 – Cleanup",color:"#6b7280",content:`<span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">RSDPS or BWMT</span>
+      
+      <ul>
+        <li><strong>RSDPS:</strong> Select subscription → <strong>Delete</strong> (single)</li>
+        <li><strong>BWMT Data Subscriptions View:</strong> Select one or more subscriptions select → Right-click → <strong>Delete</strong> (mass delete possible)</li>
+        <li>Local Table (File) is <strong>NOT</strong> automatically deleted → must be manually removed in Datasphere</li>
+        <li>After deleting the subscription, the Local Table loses its read-only flag</li>
+      </ul>
+      <span class="source-tag">Source: SAP Help – "Deleting Data Subscriptions", "Deleting Dependent Objects"</span>`},
+{id:"s62",title:"6.2 Mass Delete",phase:"Phase 6 – Cleanup",color:"#6b7280",content:`<span class="badge badge-optional">Optional</span>
+        <span class="badge badge-tool">RSDPS / SE38</span>
+      </div>
+      <ul>
+        <li><code>SE38</code> → Report <code>RSDDS_DELETE_BY_SOURCE</code></li>
+        <li>Or: <code>RSDPS</code> → <strong>Goto → Delete Data Subscriptions by Target</strong></li>
+        <li>Options: <strong>Simulate Deletion</strong> (dry run), <strong>Force Deletion</strong> (ignores errors)</li>
+      </ul>
+      <div class="callout callout-danger">
+        <strong>⚠️ Warning for Force Deletion:</strong> If the Datasphere connection is not working during the deletion, the Local Tables may retain their read-only flag and cannot be deleted afterwards in Datasphere!<br>
+        <span class="source-tag">Source: SAP Help – "Mass Deleting Data Subscriptions by Target"</span>`},
+{id:"happypath",title:"Happy Path",phase:null,color:"#333",content:`<h2 id="happypath">✅ Minimal Workflow (Happy Path)</h2>
+    <ol>
+      <li>Check prerequisites (BW 7.5 SP24+, BWPCE, Datasphere with Object Store)</li>
+      <li>Implement SAP Notes (<code>3593519</code>, <code>3590400</code>)</li>
+      <li>Configure DPG (<code>SAP_BW_BDC_CONFIGURATION</code>)</li>
+      <li>Create target (<code>RSDPS</code> → Goto → Maintain Target System)</li>
+      <li>Generate Data Subscriptions (BWMT Scenario Generator or <code>RSDPS</code> → Create)</li>
+      <li><em>Optional:</em> Adjust Extraction Mode, Selection, Projection</li>
+      <li>Data Subscriptions <strong>activate</strong> (BWMT or <code>RSDPS</code>)</li>
+      <li>Data Subscriptions <strong>execute</strong> (<code>RSDPS</code> → Run)</li>
+      <li>Verify results (<code>RSDPS</code> → Runtime / Browse)</li>
+      <li>In Datasphere: <em>Optional:</em> Local Table an another space (for reporting only)</li>
+      <li>In Datasphere: Create Data Product in Data Sharing Cockpit → Status on "Listed"</li>
+      <li><em>Optional:</em> In BDC Cockpit: Share Data Product to Databricks via Delta Sharing</li>
+    </ol>`},
+{id:"questions",title:"Clarification Questions",phase:null,color:"#333",content:`<h2 id="questions">❓ Clarification Questions</h2>
+    <ol>
+      <li><strong>Licensing:</strong> Is the BW 7.5 running as BWPCE in SAP BDC? <em>(Mandatory prerequisite!)</em></li>
+      <li><strong>SP-Level:</strong> Is at least SP24 implemented?</li>
+      <li><strong>Object Store:</strong> Is the Object Store in Datasphere already activated?</li>
+      <li><strong>SAP Notes:</strong> Are Notes 3593519 and 3590400 already implemented?</li>
+      <li><strong>Certificates:</strong> Are SSL certificates correctly maintained in STRUST?</li>
+      <li><strong>InfoProviders:</strong> Which should be replicated initially? (aDSOs, CompositeProviders, Queries?)</li>
+      <li><strong>Delta or Full?</strong> Is incremental extraction desired?</li>
+      <li><strong>Transport:</strong> Should subscriptions be transported between DEV/QAS/PRD?</li>
+      <li><strong>Automation:</strong> Should extraction be controlled via Process Chain?</li>
+      <li><strong>Databricks:</strong> Is Databricks integration (Delta Sharing) a topic?</li>
+      <li><strong>Multiple BW Systems:</strong> If multiple BW systems exist – should they write to the same or separate Datasphere spaces? (Whether multiple BW systems can technically use the same space is not explicitly documented by SAP and should be clarified with SAP.)</li>
+    </ol>`},
+{id:"sources",title:"Source Directory",phase:null,color:"#333",content:`<table>
+      <tr>
+        <td>SAP Help</td>
+        <td>"Data Product Generator for SAP Business Data Cloud" – SAP Help Portal<br>
+          <a href="https://help.sap.com/docs/SAP_BW4HANA/ed919380760a44388ab90e6bb3e7480a?locale=en-US&state=PRODUCTION&version=1.0" target="_blank">https://help.sap.com/docs/SAP_BW4HANA/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Blog 1</td>
+        <td>"BW Modernisation with the SAP BW Data Product Generator" – SAP Community<br>
+          <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/bw-modernisation-with-the-sap-bw-data-product-generator/ba-p/14336399" target="_blank">https://community.sap.com/…/bw-modernisation-with-the-sap-bw-data-product-generator/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Blog 2</td>
+        <td>"The SAP BW Data Product Generator for SAP Business Data Cloud" – SAP Community<br>
+          <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/the-sap-bw-data-product-generator-for-sap-business-data-cloud/ba-p/14072413" target="_blank">https://community.sap.com/…/the-sap-bw-data-product-generator-for-sap-business-data-cloud/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Blog 3</td>
+        <td>"BW Data Product Generator to Databricks Enterprise Capability" – SAP Community<br>
+          <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/bw-data-product-generator-to-databricks-enterprise-capability/ba-p/14251192" target="_blank">https://community.sap.com/…/bw-data-product-generator-to-databricks-enterprise-capability/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Blog 4</td>
+        <td>"Expose BW 7.5 objects as Data Products in Databricks" – SAP Community<br>
+          <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/expose-bw-7-5-objects-as-data-products-in-databricks/ba-p/14282351" target="_blank">https://community.sap.com/…/expose-bw-7-5-objects-as-data-products-in-databricks/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Blog 5</td>
+        <td>"SAP BDC - Enhance a BW Data product with SAP Databricks" – SAP Community<br>
+          <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/sap-bdc-enhance-a-bw-data-product-with-sap-databricks/ba-p/14242606" target="_blank">https://community.sap.com/…/sap-bdc-enhance-a-bw-data-product-with-sap-databricks/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Config</td>
+        <td>"Configuring the Data Product Generator for SAP Business Data Cloud" – SAP Document<br>
+          <a href="https://www.sap.com/documents/2026/02/acde4d47-3d7f-0010-bca6-c68f7e60039b.html" target="_blank">https://www.sap.com/documents/2026/02/acde4d47-…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Learning</td>
+        <td>SAP Learning Journey "Data Product Generator for SAP Business Data Cloud"<br>
+          <a href="https://learning.sap.com/courses/sap-bw-4hana-specialist/data-product-generator-for-sap-business-data-cloud" target="_blank">https://learning.sap.com/…/data-product-generator-for-sap-business-data-cloud</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Roadmap</td>
+        <td>SAP Roadmap – Data Product Generator Automation<br>
+          <a href="https://roadmaps.sap.com/board?PRODUCT=73555000100800004851&range=CURRENT-LAST#;INNO=000D3AAC9DD21FD0A4C203167B3998EE" target="_blank">https://roadmaps.sap.com/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>SAP Help 2</td>
+        <td>"Creating and Sharing Data Products" – SAP Help Portal (Data Product Generator)<br>
+          <a href="https://help.sap.com/docs/SAP_BW4HANA/ed919380760a44388ab90e6bb3e7480a?locale=en-US&state=PRODUCTION&version=1.0" target="_blank">https://help.sap.com/docs/SAP_BW4HANA/…</a>
+        </td>
+      </tr>
+      <tr>
+        <td>Arch. Center</td>
+        <td>SAP Architecture Center – "Modernizing SAP BW with SAP Business Data Cloud"<br>
+          <a href="https://architecture.learning.sap.com/docs/ref-arch/f5b6b597a6/4" target="_blank">https://architecture.learning.sap.com/…</a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-top:0.8rem"><strong>Note:</strong> SAP Help source references refer to the section names of the official SAP Help documentation (e.g. "Creating Data Subscriptions", "RSDPS Transaction in SAP GUI only only"). Additionally referenced sources (web research) are marked accordingly.</p>`}
+]};
+const P = {de: [{name:"Phase 0 – Voraussetzungen",color:"#e76500",items:["s01","s02","s03","s04","s05","s06"]},{name:"Phase 1 – Subscriptions",color:"#0070f2",items:["s11","s12","s13","s14"]},{name:"Phase 2 – Aktivieren",color:"#188918",items:["s21","s22","s23"]},{name:"Phase 3 – Automatisierung",color:"#7c6bbf",items:["s31","s32"]},{name:"Phase 4 – Data Products",color:"#cc1919",items:["s41","s42","s43"]},{name:"Phase 5 – Transport",color:"#6b7280",items:["s51","s52"]},{name:"Phase 6 – Löschen",color:"#6b7280",items:["s61","s62"]}], en: [{name:"Phase 0 – Prerequisites",color:"#e76500",items:["s01","s02","s03","s04","s05","s06"]},{name:"Phase 1 – Subscriptions",color:"#0070f2",items:["s11","s12","s13","s14"]},{name:"Phase 2 – Activate & Execute",color:"#188918",items:["s21","s22","s23"]},{name:"Phase 3 – Automation",color:"#7c6bbf",items:["s31","s32"]},{name:"Phase 4 – Data Products",color:"#cc1919",items:["s41","s42","s43"]},{name:"Phase 5 – Transport",color:"#6b7280",items:["s51","s52"]},{name:"Phase 6 – Cleanup",color:"#6b7280",items:["s61","s62"]}]};
+const STL = {de: {"bw75": "Besonderheiten BW 7.5", "overview": "Überblick DPG", "toolcomp": "Funktionsvergleich Tools", "happypath": "Happy Path", "questions": "Klärungsfragen", "sources": "Quellen-Verzeichnis"}, en: {"bw75": "BW 7.5 Specifics", "overview": "DPG Overview", "toolcomp": "Tool Comparison", "happypath": "Happy Path", "questions": "Clarification Questions", "sources": "Source Directory"}};
+const STI = {"bw75":"\u26a0\ufe0f","overview":"\ud83d\udcd8","toolcomp":"\ud83d\udd27","happypath":"\u2705","questions":"\u2753","sources":"\ud83d\udcda"};
+const ui_str = {
+  de: {ch:"Kapitel",of:"von",back:"\u2190 Zur\u00fcck",next:"Weiter \u2192",end:"Anleitung abgeschlossen \ud83c\udf89",date:"\ud83d\udcc5 29. Mai 2026"},
+  en: {ch:"Chapter",of:"of",back:"\u2190 Back",next:"Next \u2192",end:"Guide completed \ud83c\udf89",date:"\ud83d\udcc5 May 29, 2026"}
+};
+
+function App() {
+  const [cur, setCur] = useState("bw75");
+  const [sb, setSb] = useState(false);
+  const [lang, setLang] = useState("de");
+  const ref = useRef(null);
+  const sections = S[lang];
+  const phases = P[lang];
+  const stl = STL[lang];
+  const ui = ui_str[lang];
+  const idx = sections.findIndex(s => s.id === cur);
+  const sec = sections[idx] || sections[0];
+  const total = sections.length;
+
+  useEffect(() => {
+    if (ref.current) ref.current.scrollTop = 0;
+    setSb(false);
+  }, [cur, lang]);
+
+  return (
+    <div style={{display:"flex",flexDirection:"column",height:"100vh",color:"#32363a",background:"#f7f8fa",overflow:"hidden"}}>
+      <header style={{display:"flex",alignItems:"center",padding:"10px 20px",background:"linear-gradient(135deg,#1a2733,#2c4a6e)",color:"#fff",borderBottom:"3px solid #0070f2",zIndex:120,minHeight:48,gap:8}}>
+        <button onClick={()=>setSb(!sb)} className="mobile-toggle" style={{display:"none",background:"none",border:"none",fontSize:20,cursor:"pointer",padding:4,color:"rgba(255,255,255,0.7)"}}>{sb?"\u2715":"\u2630"}</button>
+        <div style={{fontSize:15,fontWeight:700,letterSpacing:"-0.01em"}}>SAP BW Data Product Generator</div>
+        <span style={{fontSize:11,opacity:0.6}}>{"\ud83c\udfaf"} BW 7.5</span>
+        <div style={{flex:1}}/>
+        <div style={{display:"flex",background:"rgba(255,255,255,0.1)",borderRadius:6,padding:2,gap:2}}>
+          <button onClick={()=>setLang("de")} style={{padding:"3px 10px",fontSize:11,fontWeight:600,border:"none",borderRadius:4,cursor:"pointer",background:lang==="de"?"rgba(255,255,255,0.25)":"transparent",color:lang==="de"?"#fff":"rgba(255,255,255,0.5)",transition:"all 0.15s"}}>DE</button>
+          <button onClick={()=>setLang("en")} style={{padding:"3px 10px",fontSize:11,fontWeight:600,border:"none",borderRadius:4,cursor:"pointer",background:lang==="en"?"rgba(255,255,255,0.25)":"transparent",color:lang==="en"?"#fff":"rgba(255,255,255,0.5)",transition:"all 0.15s"}}>EN</button>
+        </div>
+        <span style={{fontSize:11,opacity:0.5}}>{ui.date}</span>
+      </header>
+      {sb && <div onClick={()=>setSb(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.3)",zIndex:90}}/>}
+      <div style={{display:"flex",flex:1,overflow:"hidden"}}>
+        <aside className={"sidebar "+(sb?"open":"")} style={{width:280,minWidth:280,background:"#fff",borderRight:"1px solid #d9dce0",display:"flex",flexDirection:"column",overflow:"hidden",zIndex:100}}>
+          <div style={{padding:"14px 20px 10px",borderBottom:"1px solid #d9dce0"}}>
+            <div style={{fontSize:12,color:"#6a6d70"}}>{ui.ch} {idx+1} {ui.of} {total}</div>
+            <div style={{marginTop:6,height:3,background:"#eee",borderRadius:2}}><div style={{height:3,width:((idx+1)/total*100)+"%",background:"#0070f2",borderRadius:2,transition:"width 0.3s"}}/></div>
+          </div>
+          <nav style={{flex:1,overflow:"auto",padding:"8px 0"}}>
+            {["bw75","overview","toolcomp"].map(id=>(
+              <button key={id} onClick={()=>setCur(id)} style={{display:"flex",alignItems:"center",gap:8,width:"100%",padding:"8px 20px",border:"none",background:cur===id?"rgba(0,112,242,0.08)":"transparent",cursor:"pointer",textAlign:"left",borderLeft:cur===id?"3px solid #0070f2":"3px solid transparent",fontFamily:"inherit"}}>
+                <span style={{fontSize:13,fontWeight:cur===id?600:400,color:cur===id?"#0070f2":"#555"}}>{STI[id]} {stl[id]}</span>
+              </button>
+            ))}
+            <div style={{height:1,background:"#d9dce0",margin:"8px 20px"}}/>
+            {phases.map(p=>(
+              <div key={p.name} style={{marginBottom:4}}>
+                <div style={{padding:"10px 20px 4px",fontSize:11,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",color:p.color}}>{p.name}</div>
+                {p.items.map(id=>{const s=sections.find(x=>x.id===id);if(!s)return null;const isA=cur===id;return(
+                  <button key={id} onClick={()=>setCur(id)} style={{display:"flex",alignItems:"flex-start",gap:10,width:"100%",padding:"8px 20px",border:"none",background:isA?p.color+"11":"transparent",cursor:"pointer",textAlign:"left",borderLeft:isA?"3px solid "+p.color:"3px solid transparent",fontFamily:"inherit"}}>
+                    <div style={{fontSize:13,fontWeight:isA?600:400,color:isA?"#32363a":"#555",lineHeight:1.3}}>{s.title}</div>
+                  </button>);})}
+              </div>
+            ))}
+            <div style={{height:1,background:"#d9dce0",margin:"8px 20px"}}/>
+            {["happypath","questions","sources"].map(id=>(
+              <button key={id} onClick={()=>setCur(id)} style={{display:"flex",alignItems:"center",gap:8,width:"100%",padding:"8px 20px",border:"none",background:cur===id?"rgba(0,112,242,0.08)":"transparent",cursor:"pointer",textAlign:"left",borderLeft:cur===id?"3px solid #0070f2":"3px solid transparent",fontFamily:"inherit"}}>
+                <span style={{fontSize:13,fontWeight:cur===id?600:400,color:cur===id?"#0070f2":"#555"}}>{STI[id]} {stl[id]}</span>
+              </button>
+            ))}
+          </nav>
+          <div style={{padding:"12px 20px",borderTop:"1px solid #d9dce0",fontSize:11,color:"#6a6d70"}}>{total} {ui.ch}</div>
+        </aside>
+        <main ref={ref} style={{flex:1,overflow:"auto"}}>
+          <div style={{maxWidth:800,margin:"0 auto",padding:"32px 28px 80px"}}>
+            {sec.phase && (
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+                <span style={{fontSize:11,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",color:sec.color}}>{sec.phase}</span>
+                <span style={{fontSize:11,color:"#999"}}>{"\u00b7"}</span>
+                <span style={{fontSize:11,color:"#999"}}>{ui.ch} {idx+1} {ui.of} {total}</span>
+              </div>
+            )}
+            <h1 style={{fontSize:24,fontWeight:700,letterSpacing:"-0.02em",margin:"0 0 20px",lineHeight:1.2}}>{sec.title}</h1>
+            <div dangerouslySetInnerHTML={{__html:sec.content}}/>
+            <div style={{display:"flex",justifyContent:"space-between",marginTop:40,paddingTop:20,borderTop:"1px solid #d9dce0"}}>
+              {idx>0?(
+                <button onClick={()=>setCur(sections[idx-1].id)} style={{padding:"10px 20px",background:"none",border:"1px solid #d9dce0",borderRadius:8,cursor:"pointer",fontSize:13,color:"#6a6d70",fontFamily:"inherit"}}>{"\u2190"} {sections[idx-1].title}</button>
+              ):<div/>}
+              {idx<total-1?(
+                <button onClick={()=>setCur(sections[idx+1].id)} style={{padding:"10px 20px",background:sec.color||"#0070f2",border:"none",borderRadius:8,cursor:"pointer",fontSize:13,color:"#fff",fontWeight:500,fontFamily:"inherit"}}>{sections[idx+1].title} {"\u2192"}</button>
+              ):<div style={{fontSize:13,color:"#6a6d70",padding:"10px 0"}}>{ui.end}</div>}
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+
+</script>
+</body>
+</html>
