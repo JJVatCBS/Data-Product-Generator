@@ -321,16 +321,14 @@ const S = {de: [
       <ul>
         <li>Status wechselt von <strong>Inactive → Active</strong></li>
         <li>SAP Datasphere-Entity wird <strong>asynchron</strong> erstellt und deployed</li>
-        <li><strong>Local Table (File)</strong> wird mit der Subscription-ID als qualified name angelegt</li>
+        <li><strong>Local Table (File)</strong> Standardmäßig leitet das System den technischen Namen automatisch aus dem ausgewählten Quellobjekt (InfoProvider) ab. Indem Sie einen benutzerdefinierten technischen Namen festlegen, können Sie das Standardverhalten ändern und beim Anlegen des Datenabonnements eine aussagekräftige ID Ihrer Wahl eingeben</li>
         <li>Semantics Usage Type: <strong>Local Table (Fact)</strong></li>
       </ul>
       <div class="callout callout-info">
         <strong>ℹ️ Versionen:</strong> Data Subscriptions haben eine <strong>M (Modified)</strong> und <strong>A (Active)</strong> Version. Bei Änderungen muss erneut aktiviert werden, damit A = M. Transport ist nur möglich wenn A = M.<br>
         <span class="source-tag">Quelle: SAP Help – „Transporting and Migrating Data Subscriptions"</span>
       </div>
-      <div class="callout callout-info">
-        <strong>ℹ️ Roadmap – Technischer Name der Local Table:</strong> Aktuell wird der technische Name der Local Table in Datasphere automatisch aus der Subscription-ID generiert und kann nicht beeinflusst werden. Laut SAP Roadmap ist geplant, den technischen Namen zukünftig bei der Erstellung setzen zu können.<br>
-        🔗 <a href="https://roadmaps.sap.com/board?PRODUCT=73555000100800004851&range=CURRENT-LAST#;INNO=000D3AA914A11FD0AFC333763940D81F" target="_blank" style="color:var(--sap-blue)">SAP Roadmap Item ansehen</a>`},
+      },
 {id:"s22",title:"2.2 Ausführen",phase:"Phase 2 – Aktivieren",color:"#188918",content:`
         <span class="badge badge-pflicht">Pflicht</span>
         <span class="badge badge-tool">RSDPS (manuell) oder Process Chain (eingeplant)</span>
@@ -918,16 +916,14 @@ const S = {de: [
       <ul>
         <li>Status changes from <strong>Inactive → Active</strong></li>
         <li>SAP Datasphere entity is <strong>asynchronouslyously</strong> created and deployed</li>
-        <li><strong>Local Table (File)</strong> is created with the subscription ID as qualified name</li>
+        <li><strong>Local Table (File)</strong> By default, the system derives the technical name automatically from the selected source object (InfoProvider). By setting a custom technical name, you can change the default behavior and enter a meaningful identifier of your choice when creating the data subscription</li>
         <li>Semantics Usage Type: <strong>Local Table (Fact)</strong></li>
       </ul>
       <div class="callout callout-info">
         <strong>ℹ️ Versions:</strong> Data Subscriptions have an <strong>M (Modified)</strong> and <strong>A (Active)</strong> version. After changes, reactivation is required so A = M. Transport is only possible when A = M.<br>
         <span class="source-tag">Source: SAP Help – "Transporting and Migrating Data Subscriptions"</span>
       </div>
-      <div class="callout callout-info">
-        <strong>ℹ️ Roadmap – Local Table Technical Name:</strong> Currently, the technical name of the Local Table in Datasphere is automatically generated from the subscription ID and cannot be customized. According to the SAP Roadmap, the ability to set the technical name during creation is planned.<br>
-        🔗 <a href="https://roadmaps.sap.com/board?PRODUCT=73555000100800004851&range=CURRENT-LAST#;INNO=000D3AA914A11FD0AFC333763940D81F" target="_blank" style="color:var(--sap-blue)">View SAP Roadmap Item</a>`},
+      },
 {id:"s22",title:"2.2 Execute",phase:"Phase 2 – Activate & Execute",color:"#188918",content:`<span class="badge badge-pflicht">Required</span>
         <span class="badge badge-tool">RSDPS (manual) or Process Chain (scheduled)</span>
       </div>
